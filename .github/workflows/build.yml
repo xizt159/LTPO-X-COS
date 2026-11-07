@@ -22,7 +22,10 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install Android SDK components
+        uses: android-actions/setup-android@v3
+      - name: Install Android SDK packages
         run: |
+          yes | sdkmanager --licenses >/dev/null
           sdkmanager "platforms;android-34" "build-tools;34.0.0"
           echo "ANDROID_JAR=$ANDROID_HOME/platforms/android-34/android.jar" >> "$GITHUB_ENV"
       - name: Run host regression suites
