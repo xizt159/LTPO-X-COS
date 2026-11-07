@@ -37,6 +37,7 @@ runtime requirement or turn these Java hooks into kernel-level hooks.
 | Passive video policy | Uses a **60Hz ceiling with native 30Hz behavior where applicable**, only after supported playback is detected and input/content settle. Interaction restores the selected ceiling. Supported fullscreen and inline playback are handled without permanently capping the whole app. **120Hz is not selected for video.** |
 | Disable LTPO | Requests the selected rate during ordinary use. Temporary keyboard/video limits and thermal constraints still apply. |
 | Experimental 144Hz fallback | Optionally requests the real 120Hz timing during verified idle, then returns to 144Hz on interaction. **144Hz-to-1Hz remains unresolved.** |
+| Show refresh rate | Toggles Android's green refresh-rate indicator in the top-left corner. Changing the developer option requires granting root access when prompted. |
 
 Thermal protection remains effective. A requested fixed rate may yield to higher-priority system restrictions or unsupported mode combinations.
 
@@ -103,7 +104,7 @@ Block lift-to-show, fixed AOD brightness and battery-only AOD are off by default
 4. **Reboot the phone after installing or updating the APK.**
 5. Configure the desired features. Per-app policies are edited from the native Supported apps page.
 
-The Restart scopes button does **not** reload `system_server`; it does not replace the full reboot after an APK update. Direct root permission for the LTPO-X (COS) app is required only for that button. If denied, settings still work with the framework active; restart the scopes manually or reboot instead.
+The Restart scopes button does **not** reload `system_server`; it does not replace the full reboot after an APK update. Root access is used by the Restart scopes button and the Show refresh rate toggle. If denied, module settings still work; restart the scopes manually or reboot instead.
 
 ## Latest changes: Beta 1
 
