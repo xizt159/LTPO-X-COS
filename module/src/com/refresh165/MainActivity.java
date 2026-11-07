@@ -17,13 +17,10 @@ public final class MainActivity extends Activity {
     private Switch refreshRateOverlaySwitch;
     private boolean refreshRateOverlayUpdating;
     private boolean refreshRateOverlaySyncing;
+    private boolean refreshRateOverlayStateLoading;
     @Override protected void onResume(){
         super.onResume();
-        if(refreshRateOverlaySwitch!=null&&!refreshRateOverlayUpdating){
-            refreshRateOverlaySyncing=true;
-            refreshRateOverlaySwitch.setChecked(android.provider.Settings.Global.getInt(getContentResolver(),RefreshRateOverlay.SETTING,0)!=0);
-            refreshRateOverlaySyncing=false;
-        }
+        syncRefreshRateOverlayState();
     }
     @Override protected void attachBaseContext(Context base){
         String lang=base.createDeviceProtectedStorageContext().getSharedPreferences("ui",0).getString("language","system");
@@ -136,7 +133,7 @@ public final class MainActivity extends Activity {
         LinearLayout l=group("التفعيل");
         Switch overlay=new Switch(this);refreshRateOverlaySwitch=overlay;
         overlay.setContentDescription(tr("إظهار معدل التحديث"));
-        overlay.setChecked(android.provider.Settings.Global.getInt(getContentResolver(),RefreshRateOverlay.SETTING,0)!=0);
+        overlay.setEnabled(false);
         overlay.setOnCheckedChangeListener((button,enabled)->{
             if(!refreshRateOverlaySyncing)setRefreshRateOverlay(overlay,enabled);
         });
@@ -147,6 +144,29 @@ public final class MainActivity extends Activity {
         row.addView(overlay);row.setOnClickListener(v->{if(overlay.isEnabled())overlay.setChecked(!overlay.isChecked());});
         info(l,"فعّل LTPO-X (COS) داخل LSPosed للنظام والإعدادات وSystemUI وAOD، ثم أعد التشغيل. لا تفعّل FreshShift أو ColorOS AOD أو موديول هرتز آخر معه. تعديل التردد والخصائص يعمل من هنا؛ تغييرات إتاحة AOD قد تحتاج إعادة فتح صفحته أو إعادة التشغيل.");
         action(l,"فتح إعدادات الشاشة","لمراجعة خيارات النظام",()->{try{startActivity(new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS));}catch(Exception ignored){}});
+        syncRefreshRateOverlayState();
+    }
+    private void syncRefreshRateOverlayState(){
+        Switch toggle=refreshRateOverlaySwitch;
+        if(toggle==null||refreshRateOverlayUpdating||refreshRateOverlayStateLoading)return;
+        refreshRateOverlayStateLoading=true;toggle.setEnabled(false);
+        new Thread(()->{
+            boolean enabled=false;String failure=null;
+            try{enabled=RefreshRateOverlay.isEnabled();}
+            catch(Exception e){failure=e.getMessage()==null?e.getClass().getSimpleName():e.getMessage();}
+            final boolean actual=enabled;final String error=failure;
+            runOnUiThread(()->{
+                refreshRateOverlayStateLoading=false;
+                if(isFinishing())return;
+                refreshRateOverlaySyncing=true;toggle.setChecked(actual);refreshRateOverlaySyncing=false;
+                toggle.setEnabled(true);
+                if(error!=null){
+                    new AlertDialog.Builder(this).setTitle(tr("إظهار معدل التحديث"))
+                            .setMessage(tr("تعذر قراءة حالة معدل التحديث. امنح صلاحية الروت، ثم حاول مجددًا.")+"\n\n"+error)
+                            .setPositiveButton(tr("حسنًا"),null).show();
+                }
+            });
+        },"ReadRefreshRateOverlay").start();
     }
     private void setRefreshRateOverlay(Switch toggle,boolean enabled){
         if(refreshRateOverlayUpdating)return;

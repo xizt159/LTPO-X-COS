@@ -13,7 +13,9 @@ def main():
         root / "module/src/com/refresh165/RateProfile.java",
         root / "module/src/com/refresh165/AdaptiveState.java",
         root / "module/src/com/refresh165/ImeLatch.java",
+        root / "module/src/com/refresh165/RefreshRateOverlay.java",
         root / "tests/PolicyTest.java",
+        root / "tests/RefreshRateOverlayTest.java",
     ]
     subprocess.run(
         [
@@ -30,6 +32,10 @@ def main():
     )
     subprocess.run(
         ["java", "-cp", str(output), "com.refresh165.PolicyTest"],
+        check=True,
+    )
+    subprocess.run(
+        ["java", "-cp", str(output), "com.refresh165.RefreshRateOverlayTest"],
         check=True,
     )
 
