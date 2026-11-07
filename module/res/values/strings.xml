@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?><resources>
+<string name="app_name">Screen Tuner</string><string name="module_desc">ColorOS17 display and AOD controls. Independent feature switches, 300ms IME delay, idle video cap, real120Hz idle timing for144Hz.</string>
+<string name="module_author">Refresh165 local fork</string></resources>

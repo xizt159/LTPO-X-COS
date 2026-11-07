@@ -1,0 +1,69 @@
+{
+  "name": "Screen Tuner",
+  "version": "2.0.4-unified-exp5",
+  "versionCode": 20005,
+  "package": "com.refresh165",
+  "checks": 739,
+  "tests": [
+    {
+      "suite": "pure",
+      "result": "PASS 107 profile/IME assertions"
+    },
+    {
+      "suite": "lifecycle",
+      "result": "PASS 118 production callback/thermal/IME/native-idle/DC assertions (Android and OEM mocked)\nPASS 60 real-fixture/playback/input/lease/race/vendor-candidate assertions\nPASS 126 unified adapters / per-feature off assertions\nPASS 29 exp2 ambient/144-transition/wallpaper/double-tap/language assertions\nPASS 34 exp3 live-SF-duplicate/opaque-backdrop/LuckyTool-path/two-stage-tap assertions\nPASS 31 exp4 motion-only gate / fixed brightness priority and sentinels / battery-only status scope assertions\nPASS 48 per-app profiles / foreground isolation / copied user votes / fixed-variable / thermal-FOD / IME assertions"
+    },
+    {
+      "suite": "provider",
+      "result": "PASS 64 actual configuration / provider authorization assertions"
+    },
+    {
+      "suite": "settings",
+      "result": "PASS 13 original OEM menu / restore assertions"
+    },
+    {
+      "suite": "widgets",
+      "result": "PASS 79 real battery label lifecycle/visibility/updates/touch and native jump-slot restoration assertions"
+    },
+    {
+      "suite": "supported-apps",
+      "result": "PASS 30 native supported-app list/search recycling / 12 choices / three-dot bulk actions / restore assertions"
+    }
+  ],
+  "signingCertificateSha256": "68d34f094ffba5b3499dffef80ee36bc8c25b8b44b4bffe3eda59f1fc45a13bf",
+  "unchangedProductionFiles": [
+    "VideoIdlePolicy.java",
+    "VideoFrameEvidence.java",
+    "ImeLatch.java",
+    "NativeTables.java",
+    "RateProfile.java",
+    "AodBackdropPolicy.java",
+    "AodTapPolicy.java",
+    "AodTapSequence.java",
+    "AodPolicy.java",
+    "AodLiftPolicy.java",
+    "AodBatteryPolicy.java",
+    "PanoramicStatusPolicy.java",
+    "AodValues.java",
+    "ScopeRestart.java",
+    "MenuIndicator.java",
+    "ToolbarIcon.java",
+    "SettingsIntegration.java"
+  ],
+  "perAppMaster": "app_policies defaults on, no new overrides until selection",
+  "newPhysicalBehaviorVerified": false,
+  "adbAvailable": true,
+  "deviceFirmware": "CPH2745_17.0.0.102(EX01)",
+  "installedBaseline": "2.0.3-unified-exp4",
+  "nativeSettingsApkMatchesReviewed": true,
+  "settingsApkSha256": "0827d20d39e17c46e44ebf0d638cb0ac92e60c9b3c8a9d62774c3ec2e22085a1",
+  "supportedAppsCountReadOnDevice": 99,
+  "nativeOverflowReadOnDevice": "Restore to defaults",
+  "deviceInstalledOrRestarted": false,
+  "basis": "exp4; reviewed current matching Settings APK and live read-only device captures",
+  "sha256": {
+    "ScreenTuner-exp5.apk": "9a75e6453a0952b5eb6afb8fcf780ddb0cfde31fbf3b6fec0dd8ac3a920aad39",
+    "ScreenTuner-exp5-source.zip": "47316769612abf38d0c47e1174ba61c34e6818b609c12f1766675ef4fd756e65",
+    "changes-from-exp4.diff": "c86e3efb7b2e01ad712a2f659fa2352c6a4ba00512b854cad79d418ab920a20b"
+  }
+}

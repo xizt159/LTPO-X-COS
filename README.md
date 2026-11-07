@@ -15,7 +15,12 @@ Screen Tuner brings display tuning, per-app refresh policies and AOD customizati
 - A rooted device with a working hooking framework supporting **modern libxposed API 102**. Legacy-only Xposed support is insufficient.
 - This is a device-specific experimental module. Other firmware versions, OxygenOS and other OnePlus/OPPO devices are **not confirmed compatible**.
 
-The APK does not flash DTBO, replace DRM kernel modules or create new physical panel timings.
+The APK does not flash DTBO, replace DRM kernel modules or create new physical
+panel timings. It is an Xposed/libxposed module and still requires a hook
+runtime that implements libxposed API 102 to hook Android and OEM Java
+processes. Magisk or KernelSU alone cannot replace that runtime. A Magisk/KernelSU
+package could distribute or install the APK, but would not remove the Xposed
+runtime requirement or turn these Java hooks into kernel-level hooks.
 
 ## Display and brightness
 

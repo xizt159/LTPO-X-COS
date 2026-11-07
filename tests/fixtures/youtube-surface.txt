@@ -1,0 +1,44 @@
+  Layer [293] VRI-com.google.android.youtube/com.google.android.youtube.app.honeycomb.Shell$HomeActivity#293
+    visible reason= buffer=87209310950210 frame=1062
+    bounds={0,0,1080,2354}
+    input{(TRUSTED_OVERLAY) canOccludePresentation touchCropId=166 touchableRegion={0,0,2354,1080}}
+    appSideRC=empty
+    ownerPid=42
+      isSecure=false geomUsesSourceCrop=true geomBufferUsesDisplayInverseTransform=false geomLayerTransform (ROT_0) (IDENTITY)
+
+      geomBufferSize=[0 0 1080 2354] geomContentCrop=[0 0 1080 2354] geomCrop=[0.000000 0.000000 -1.000000 -1.000000] geomBufferTransform=0 
+        Region transparentRegionHint (this=0xb400007552dc3148, count=1)
+    [  0,   0,   0,   0]
+      geomLayerBounds=[0.000000 0.000000 1080.000000 2354.000000]       geomLayerBoundsOri=[0.000000 0.000000 1080.000000 2354.000000]       shadowLength=0.000000       borderSettings=BorderSettings{strokeWidth: 0.000000, color: 0}       boxShadowSettings=BoxShadowSettings{boxShadows: []} 
+      blend=PREMULTIPLIED (2) alpha=1.000000 backgroundBlurRadius=0 transformMatrix4x4=[[1.000,0.000,0.000,0.000][0.000,1.000,0.000,0.000][0.000,0.000,1.000,0.000][0.000,0.000,0.000,1.000]] composition type=DEVICE (2) 
+      buffer: buffer=0xb40000756faef200 
+      sideband stream=0x0 
+      color=[0.000000 0.000000 0.000000] 
+      isVisible=true forceClientComposition=false clientType=0x0 isOplusSecure=false ignoreSecure=false displayOwnerId=0 createFrom=20305 edrSdrRatio=1.000000 inheritEdrSdrRatio=false 
+      isOpaque=false hasProtectedContent=false isColorspaceAgnostic=false dataspace=V0_SRGB (142671872) hdr metadata types=0 dimming enabled=true colorTransform=[[1.000,0.000,0.000,0.000][0.000,1.000,0.000,0.000][0.000,0.000,1.000,0.000][0.000,0.000,0.000,1.000]] caching hint=Enabled 
+ desiredHdrSdrRatio=1
+
+  Layer [306] e139793 SurfaceView[com.google.android.youtube/com.google.android.youtube.app.honeycomb.Shell$HomeActivity](BLAST)#306
+    visible reason= buffer=87209310946654 frame=5540 contentDirty
+    bounds={0,120,1080,728} toDisplayTransform={ scale x=1.6875 y=1.6889  tx=0.0000 ty=120.0000 }
+    input{(NO_INPUT_CHANNEL | TRUSTED_OVERLAY) canOccludePresentation touchableRegion={0,120,120,0}}
+    appSideRC=empty
+    ownerPid=42
+      isSecure=false geomUsesSourceCrop=true geomBufferUsesDisplayInverseTransform=false geomLayerTransform (ROT_0) (SCALE TRANSLATE)
+    1.6875  0.0000  0.0000
+    0.0000  1.6889  120.0000
+    0.0000  0.0000  1.0000
+
+      geomBufferSize=[0 0 640 360] geomContentCrop=[0 0 640 360] geomCrop=[0.000000 0.000000 -1.000000 -1.000000] geomBufferTransform=0 
+        Region transparentRegionHint (this=0xb4000075820b8148, count=1)
+    [  0,   0,   0,   0]
+      geomLayerBounds=[0.000000 0.000000 639.999939 360.000000]       geomLayerBoundsOri=[0.000000 0.000000 639.999939 360.000000]       shadowLength=0.000000       borderSettings=BorderSettings{strokeWidth: 0.000000, color: 0}       boxShadowSettings=BoxShadowSettings{boxShadows: []} 
+      blend=NONE (1) alpha=1.000000 backgroundBlurRadius=0 transformMatrix4x4=[[1.000,0.000,0.000,0.000][0.000,1.000,0.000,0.000][0.000,0.000,1.000,0.000][0.000,0.000,0.000,1.000]] composition type=DEVICE (2) 
+      buffer: buffer=0xb40000754d7f8400 
+      sideband stream=0x0 
+      color=[0.000000 0.000000 0.000000] 
+      isVisible=true forceClientComposition=false clientType=0x0 isOplusSecure=false ignoreSecure=false displayOwnerId=0 createFrom=20305 edrSdrRatio=1.000000 inheritEdrSdrRatio=false 
+      isOpaque=true hasProtectedContent=false isColorspaceAgnostic=false dataspace=V0_BT709 (281083904) hdr metadata types=0 dimming enabled=true colorTransform=[[1.000,0.000,0.000,0.000][0.000,1.000,0.000,0.000][0.000,0.000,1.000,0.000][0.000,0.000,0.000,1.000]] caching hint=Enabled 
+
+
+layer:   75 name: e139793 SurfaceView[com.google.android.youtube/com.google.android.youtube.app.honeycomb.Shell$HomeActivity]#7(BLAST Consumer)7 z: 0 composition: 2/2 alpha: 65535 format:  Y_CBCR_420_VENUS_UBWC dataspace:0x10810000 transform: 0/0/0 buffer_id: 0xb400007afaa5b380 secure: 0

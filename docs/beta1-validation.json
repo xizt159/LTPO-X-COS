@@ -1,0 +1,53 @@
+{
+  "name": "Screen Tuner",
+  "version": "1.0.0-beta.1",
+  "versionCode": 20006,
+  "package": "com.refresh165",
+  "checks": 757,
+  "tests": [
+    {
+      "suite": "pure",
+      "result": "PASS 107 profile/IME assertions"
+    },
+    {
+      "suite": "lifecycle",
+      "result": "PASS 120 production callback/thermal/IME/native-idle/DC assertions (Android and OEM mocked)\nPASS 60 real-fixture/playback/input/lease/race/vendor-candidate assertions\nPASS 126 unified adapters / per-feature off assertions\nPASS 29 exp2 ambient/144-transition/wallpaper/double-tap/language assertions\nPASS 34 exp3 live-SF-duplicate/opaque-backdrop/LuckyTool-path/two-stage-tap assertions\nPASS 31 exp4 motion-only gate / fixed brightness priority and sentinels / battery-only status scope assertions\nPASS 48 per-app profiles / foreground isolation / copied user votes / fixed-variable / thermal-FOD / IME assertions\nPASS 16 native focus-event / no-surface-traversal / coalescing / split-screen / keyboard owner / screen-off assertions"
+    },
+    {
+      "suite": "provider",
+      "result": "PASS 64 actual configuration / provider authorization assertions"
+    },
+    {
+      "suite": "settings",
+      "result": "PASS 13 original OEM menu / restore assertions"
+    },
+    {
+      "suite": "widgets",
+      "result": "PASS 79 real battery label lifecycle/visibility/updates/touch and native jump-slot restoration assertions"
+    },
+    {
+      "suite": "supported-apps",
+      "result": "PASS 30 native supported-app list/search recycling / 12 choices / three-dot bulk actions / restore assertions"
+    }
+  ],
+  "signingCertificateSha256": "68d34f094ffba5b3499dffef80ee36bc8c25b8b44b4bffe3eda59f1fc45a13bf",
+  "apkSha256": "c60b4bffbcfa1256ff57b83937b0728ef886b2df41bbebab9b9cbaa909ade121",
+  "firmware": "CPH2745_17.0.0.102(EX01)",
+  "devicePolicyValidation": {
+    "userConfirmedAllFixedAndVariableChoices": true,
+    "independentTelemetry": {
+      "foreground": "com.oneplus.gallery",
+      "policy": "v120",
+      "globalRate": 165,
+      "cap": 120,
+      "resolvedPhysicalMax": 120.01,
+      "resolvedRenderMax": 120.00001,
+      "loadedProfileCount": 100,
+      "initialConfigLoadFailures": 3,
+      "successfulConfigLoads": 2
+    }
+  },
+  "installedByAgent": false,
+  "rebootedByAgent": false,
+  "knownLimitation": "144Hz to1Hz remains unresolved"
+}

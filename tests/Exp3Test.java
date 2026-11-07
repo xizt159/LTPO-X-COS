@@ -1,0 +1,27 @@
+package com.refresh165;
+import android.os.*;
+import com.refresh165.xp.*;
+import java.lang.reflect.*;
+import java.nio.file.*;
+public final class Exp3Test {
+ static int checks;static void yes(boolean b){checks++;if(!b)throw new AssertionError("exp3 "+checks);}
+ static Object call(Object o,String n,Class<?>[] t,Object...args)throws Exception{return XposedBridge.call(o.getClass().getDeclaredMethod(n,t),o,args);}
+ static Handler main(Class<?> c)throws Exception{Field f=c.getDeclaredField("MAIN");f.setAccessible(true);return (Handler)f.get(null);}
+ public static void main(String[]args)throws Exception{
+  String dump=Files.readString(Path.of(args[0]));RootFrame a=RootFrame.parse(dump,"com.android.settings",12637);yes(a!=null&&a.id==1476&&a.frame==357);yes(RootFrame.parse(dump.replaceFirst("frame=357","frame=358"),"com.android.settings",12637)==null);yes(RootFrame.parse(dump.replaceFirst("\\[1476\\]","[1477]"),"com.android.settings",12637)==null);
+  AodTapSequence.clear();yes(AodTapSequence.tap(0,false)==0);yes(AodTapSequence.tap(20,false)==0);yes(AodTapSequence.tap(160,false)==1);yes(AodTapSequence.tap(165,true)==1);yes(AodTapSequence.tap(400,true)==2);yes(AodTapSequence.tap(410,true)==0);AodTapSequence.clear();yes(AodTapSequence.tap(0,false)==0);yes(AodTapSequence.tap(600,false)==0);yes(AodTapSequence.tap(800,false)==1);
+  AodBackdropPolicy.install(Exp3Test.class.getClassLoader());Config.flags.put("aod",true);Config.flags.put("hide_wallpaper",true);PowerManager.interactive=false;
+  com.android.systemui.scrim.ScrimView behind=new com.android.systemui.scrim.ScrimView();call(behind,"setViewAlpha",new Class<?>[]{float.class},.1f);call(behind,"setTint",new Class<?>[]{int.class},123);yes(behind.alpha==1f);yes(behind.tint==0xff000000);android.graphics.Canvas canvas=new android.graphics.Canvas();call(behind,"onDraw",new Class<?>[]{android.graphics.Canvas.class},canvas);yes(canvas.color==0xff000000&&behind.draws==0);
+  for(boolean allDay:new boolean[]{true,false}){Config.flags.put("all_day",allDay);android.graphics.Canvas c=new android.graphics.Canvas();call(behind,"onDraw",new Class<?>[]{android.graphics.Canvas.class},c);yes(c.color==0xff000000);}
+  com.android.systemui.scrim.ScrimView front=new com.android.systemui.scrim.ScrimView();front.id=2;call(front,"setViewAlpha",new Class<?>[]{float.class},.3f);yes(front.alpha==.3f);android.graphics.Canvas frontCanvas=new android.graphics.Canvas();call(front,"onDraw",new Class<?>[]{android.graphics.Canvas.class},frontCanvas);yes(front.draws==1&&frontCanvas.color==0);
+  PowerManager.interactive=true;Config.fire();main(AodBackdropPolicy.class).until(SystemClock.now);yes(behind.alpha==.1f&&behind.tint==123);android.graphics.Canvas awakeCanvas=new android.graphics.Canvas();call(behind,"onDraw",new Class<?>[]{android.graphics.Canvas.class},awakeCanvas);yes(behind.draws==1&&awakeCanvas.color==0);
+  PowerManager.interactive=false;Config.flags.put("hide_wallpaper",false);Config.fire();main(AodBackdropPolicy.class).until(SystemClock.now);call(behind,"setViewAlpha",new Class<?>[]{float.class},.2f);yes(behind.alpha==.2f);
+  PanoramicStatusPolicy.install(Exp3Test.class.getClassLoader());com.oplus.systemui.statusbar.phone.KeyguardStatusBarViewExImpl bar=new com.oplus.systemui.statusbar.phone.KeyguardStatusBarViewExImpl();yes(!(Boolean)call(bar,"hookDozingState",new Class<?>[]{boolean.class},true));yes(bar.calls==0);yes((Boolean)call(bar,"hookDozingState",new Class<?>[]{boolean.class},false));yes(bar.calls==1);Config.flags.put("panoramic",false);yes((Boolean)call(bar,"hookDozingState",new Class<?>[]{boolean.class},true));Config.flags.put("panoramic",true);com.oplus.systemui.aod.aodclock.constant.AodData.INSTANCE.panoramic=false;yes((Boolean)call(bar,"hookDozingState",new Class<?>[]{boolean.class},true));com.oplus.systemui.aod.aodclock.constant.AodData.INSTANCE.panoramic=true;
+  AodTapSequence.clear();AodPolicy.install(Exp3Test.class.getClassLoader(),"com.android.systemui");Config.flags.put("block_tap",true);PowerManager.interactive=false;PowerManager.wakes=0;com.oplus.systemui.aod.aodclock.constant.AodData.INSTANCE.mAodIsInShow=false;
+  com.oplus.systemui.aod.display.OplusWakeUpController$AodSingleClickWakeUpCallback taps=new com.oplus.systemui.aod.display.OplusWakeUpController$AodSingleClickWakeUpCallback();Class<?>[] types={com.android.systemui.keyguard.OplusBlackScreenGestureEvent.class};Object event=new com.android.systemui.keyguard.OplusBlackScreenGestureEvent();SystemClock.now=10000;call(taps,"onClick",types,event);yes(taps.calls==0&&PowerManager.wakes==0);SystemClock.now=10160;call(taps,"onClick",types,event);yes(taps.calls==1&&PowerManager.wakes==0);
+  com.oplus.systemui.aod.aodclock.constant.AodData.INSTANCE.mAodIsInShow=true;SystemClock.now=10165;call(taps,"onClick",types,event);yes(PowerManager.wakes==0);SystemClock.now=10400;call(taps,"onClick",types,event);yes(PowerManager.wakes==1&&PowerManager.interactive);
+  PowerManager.interactive=false;com.oplus.systemui.aod.display.OplusWakeUpController.INSTANCE.proximityNear=true;SystemClock.now=10800;call(taps,"onClick",types,event);yes(PowerManager.wakes==1);com.oplus.systemui.aod.display.OplusWakeUpController.INSTANCE.proximityNear=false;
+  Config.flags.put("block_tap",false);SystemClock.now=11000;call(taps,"onClick",types,event);yes(taps.calls==2);
+  System.out.println("PASS "+checks+" exp3 live-SF-duplicate/opaque-backdrop/LuckyTool-path/two-stage-tap assertions");
+ }
+}
