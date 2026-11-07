@@ -156,7 +156,7 @@ The shell builder creates a separate local key if none is provided. Self-built A
 
 ### GitHub release builds
 
-Pushing a tag matching the `versionName` in `version.properties` (for example, `v1.0.0-beta.2`) runs the signed release workflow. A new version tag creates a new GitHub Release and retains older releases. Rerunning the workflow for the same tag replaces that release's APK asset.
+Pushing a tag matching the `versionName` in `version.properties` (for example, `v1.0.0-beta.2`) runs the signed release workflow. A new version tag creates a new GitHub Release and retains older releases. To rebuild an existing version, run **Build and publish release APK** from the Actions page and enter its existing tag; that replaces the release's APK asset.
 
 Configure these repository Actions secrets before pushing a release tag:
 
@@ -172,7 +172,7 @@ git tag v1.0.0-beta.2
 git push origin v1.0.0-beta.2
 ```
 
-Use the actual `versionName` from `version.properties`. To replace the APK for that same version, rerun **Build and publish release APK** for the existing tag from the Actions page; do not move a published tag. A newly generated key cannot update installs signed by a different key.
+Use the actual `versionName` from `version.properties`. Do not move a published tag. A newly generated key cannot update installs signed by a different key.
 
 **Host regression suites:**
 
