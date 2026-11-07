@@ -1,12 +1,12 @@
-# Screen Tuner
+# LTPO-X (COS)
 
 **Adaptive refresh-rate policies and Always-On Display controls for OnePlus 15 on ColorOS 17.**
 
-Screen Tuner brings display tuning, per-app refresh policies and AOD customization into one APK-based Xposed module. It aims to keep interaction smooth at your selected rate, allow low-refresh idle where supported, and apply temporary limits during typing and passive video playback.
+LTPO-X (COS) brings display tuning, per-app refresh policies and AOD customization into one APK-based Xposed module. It aims to keep interaction smooth at your selected rate, allow low-refresh idle where supported, and apply temporary limits during typing and passive video playback.
 
 **Current release:** `1.0.0-beta.1` (Beta 1) · **versionCode:** `20006` · **package:** `com.refresh165`
 
-[Download APK](https://github.com/MaZaGnGy/Screen-Tuner/releases/download/v1.0.0-beta.1/ScreenTuner-beta1.apk) · [Releases](https://github.com/MaZaGnGy/Screen-Tuner/releases) · [Changelog](CHANGELOG.md) · [Arabic Beta 1 guide](README-BETA1-AR.md)
+[Download APK](https://github.com/xizt159/LTPO-X-COS/releases/latest) · [Releases](https://github.com/xizt159/LTPO-X-COS/releases) · [Changelog](CHANGELOG.md) · [Arabic Beta 1 guide](README-BETA1-AR.md)
 
 ## Compatibility and requirements
 
@@ -15,7 +15,12 @@ Screen Tuner brings display tuning, per-app refresh policies and AOD customizati
 - A rooted device with a working hooking framework supporting **modern libxposed API 102**. Legacy-only Xposed support is insufficient.
 - This is a device-specific experimental module. Other firmware versions, OxygenOS and other OnePlus/OPPO devices are **not confirmed compatible**.
 
-The APK does not flash DTBO, replace DRM kernel modules or create new physical panel timings.
+The APK does not flash DTBO, replace DRM kernel modules or create new physical
+panel timings. It is an Xposed/libxposed module and still requires a hook
+runtime that implements libxposed API 102 to hook Android and OEM Java
+processes. Magisk or KernelSU alone cannot replace that runtime. A Magisk/KernelSU
+package could distribute or install the APK, but would not remove the Xposed
+runtime requirement or turn these Java hooks into kernel-level hooks.
 
 ## Display and brightness
 
@@ -53,7 +58,7 @@ The native on/off switch is replaced by a policy selector. The same controls wor
 - **Select all…** — choose one policy for the full supported-app list, including rows currently offscreen.
 - **Clear all** — return the list to System default.
 - **Follow current refresh rate** — apply dynamic following to the full list.
-- **Restore to defaults** — retains the native confirmation/reset and also clears Screen Tuner app overrides after confirmation.
+- **Restore to defaults** — retains the native confirmation/reset and also clears LTPO-X (COS) app overrides after confirmation.
 
 Choosing a policy enables the per-app policy master switch. Disabling that master retains saved choices but stops applying them. The focused full-task app owns the per-app policy; multiwindow does not impose one app's profile on the other windows. Keyboard, passive-video, thermal and relevant system limits still take precedence over fixed profiles.
 
@@ -89,8 +94,8 @@ Block lift-to-show, fixed AOD brightness and battery-only AOD are off by default
 ## Installation and updates
 
 1. Disable overlapping refresh-rate/AOD modules or corresponding features, including Refresh165, FreshShift, ColorOS AOD and LuckyTool display modifications.
-2. Install the release APK. Existing Screen Tuner users can install it as an update with the same signing certificate.
-3. Enable Screen Tuner in your module manager and accept the recommended scopes:
+2. Install the release APK. Existing LTPO-X (COS) users can install it as an update with the same signing certificate.
+3. Enable LTPO-X (COS) in your module manager and accept the recommended scopes:
    - Android System / System Framework (`android` / `system`, depending on manager naming)
    - Settings (`com.android.settings`)
    - SystemUI (`com.android.systemui`)
@@ -98,7 +103,7 @@ Block lift-to-show, fixed AOD brightness and battery-only AOD are off by default
 4. **Reboot the phone after installing or updating the APK.**
 5. Configure the desired features. Per-app policies are edited from the native Supported apps page.
 
-The Restart scopes button does **not** reload `system_server`; it does not replace the full reboot after an APK update. Direct root permission for the Screen Tuner app is required only for that button. If denied, settings still work with the framework active; restart the scopes manually or reboot instead.
+The Restart scopes button does **not** reload `system_server`; it does not replace the full reboot after an APK update. Direct root permission for the LTPO-X (COS) app is required only for that button. If denied, settings still work with the framework active; restart the scopes manually or reboot instead.
 
 ## Latest changes: Beta 1
 
@@ -151,12 +156,12 @@ The shell builder creates a separate local key if none is provided. Self-built A
 **Host regression suites:**
 
 ```bash
-python run_tests.py /tmp/screen-tuner-pure
-python tests/run_lifecycle.py /tmp/screen-tuner-lifecycle
-python tests/provider_check.py /tmp/screen-tuner-provider
-python tests/settings_check.py /tmp/screen-tuner-settings
-ANDROID_JAR=/path/to/android.jar python tests/widgets_check.py /tmp/screen-tuner-widgets
-ANDROID_JAR=/path/to/android.jar python tests/supported_apps_check.py /tmp/screen-tuner-supported
+python run_tests.py /tmp/ltpo-x-cos-pure
+python tests/run_lifecycle.py /tmp/ltpo-x-cos-lifecycle
+python tests/provider_check.py /tmp/ltpo-x-cos-provider
+python tests/settings_check.py /tmp/ltpo-x-cos-settings
+ANDROID_JAR=/path/to/android.jar python tests/widgets_check.py /tmp/ltpo-x-cos-widgets
+ANDROID_JAR=/path/to/android.jar python tests/supported_apps_check.py /tmp/ltpo-x-cos-supported
 ```
 
 These suites use Android/OEM stand-ins and recorded fixtures. They validate adapter behavior and policy isolation; they cannot establish physical panel performance or visual correctness on a phone.

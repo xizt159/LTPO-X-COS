@@ -1,0 +1,37 @@
+[
+  {
+    "ui_id": 488,
+    "ui_frame": 692,
+    "video_id": 498,
+    "video_frame": 2371,
+    "at_ms": 0
+  },
+  {
+    "ui_id": 488,
+    "ui_frame": 696,
+    "video_id": 498,
+    "video_frame": 2405,
+    "at_ms": 1135
+  },
+  {
+    "ui_id": 488,
+    "ui_frame": 699,
+    "video_id": 498,
+    "video_frame": 2439,
+    "at_ms": 2249
+  },
+  {
+    "ui_id": 488,
+    "ui_frame": 702,
+    "video_id": 498,
+    "video_frame": 2473,
+    "at_ms": 3412
+  },
+  {
+    "ui_id": 488,
+    "ui_frame": 707,
+    "video_id": 498,
+    "video_frame": 2508,
+    "at_ms": 4573
+  }
+]
