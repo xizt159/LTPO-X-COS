@@ -1,3 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?><resources>
-<string name="app_name">Screen Tuner</string><string name="module_desc">ColorOS17 display and AOD controls. Independent feature switches, 300ms IME delay, idle video cap, real120Hz idle timing for144Hz.</string>
+<string name="app_name">LTPO-X (COS)</string><string name="module_desc">LTPO-X (COS): Advanced display control module for ColorOS &amp; OxygenOS. Global high refresh rate (165Hz) management, dynamic input/video throttling, and AOD optimization.</string>
 <string name="module_author">Refresh165 local fork</string></resources>

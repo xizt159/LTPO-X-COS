@@ -1,8 +1,8 @@
-# Screen Tuner
+# LTPO-X (COS)
 
 **Adaptive refresh-rate policies and Always-On Display controls for OnePlus 15 on ColorOS 17.**
 
-Screen Tuner brings display tuning, per-app refresh policies and AOD customization into one APK-based Xposed module. It aims to keep interaction smooth at your selected rate, allow low-refresh idle where supported, and apply temporary limits during typing and passive video playback.
+LTPO-X (COS) brings display tuning, per-app refresh policies and AOD customization into one APK-based Xposed module. It aims to keep interaction smooth at your selected rate, allow low-refresh idle where supported, and apply temporary limits during typing and passive video playback.
 
 **Current release:** `1.0.0-beta.1` (Beta 1) · **versionCode:** `20006` · **package:** `com.refresh165`
 
@@ -58,7 +58,7 @@ The native on/off switch is replaced by a policy selector. The same controls wor
 - **Select all…** — choose one policy for the full supported-app list, including rows currently offscreen.
 - **Clear all** — return the list to System default.
 - **Follow current refresh rate** — apply dynamic following to the full list.
-- **Restore to defaults** — retains the native confirmation/reset and also clears Screen Tuner app overrides after confirmation.
+- **Restore to defaults** — retains the native confirmation/reset and also clears LTPO-X (COS) app overrides after confirmation.
 
 Choosing a policy enables the per-app policy master switch. Disabling that master retains saved choices but stops applying them. The focused full-task app owns the per-app policy; multiwindow does not impose one app's profile on the other windows. Keyboard, passive-video, thermal and relevant system limits still take precedence over fixed profiles.
 
@@ -94,8 +94,8 @@ Block lift-to-show, fixed AOD brightness and battery-only AOD are off by default
 ## Installation and updates
 
 1. Disable overlapping refresh-rate/AOD modules or corresponding features, including Refresh165, FreshShift, ColorOS AOD and LuckyTool display modifications.
-2. Install the release APK. Existing Screen Tuner users can install it as an update with the same signing certificate.
-3. Enable Screen Tuner in your module manager and accept the recommended scopes:
+2. Install the release APK. Existing LTPO-X (COS) users can install it as an update with the same signing certificate.
+3. Enable LTPO-X (COS) in your module manager and accept the recommended scopes:
    - Android System / System Framework (`android` / `system`, depending on manager naming)
    - Settings (`com.android.settings`)
    - SystemUI (`com.android.systemui`)
@@ -103,7 +103,7 @@ Block lift-to-show, fixed AOD brightness and battery-only AOD are off by default
 4. **Reboot the phone after installing or updating the APK.**
 5. Configure the desired features. Per-app policies are edited from the native Supported apps page.
 
-The Restart scopes button does **not** reload `system_server`; it does not replace the full reboot after an APK update. Direct root permission for the Screen Tuner app is required only for that button. If denied, settings still work with the framework active; restart the scopes manually or reboot instead.
+The Restart scopes button does **not** reload `system_server`; it does not replace the full reboot after an APK update. Direct root permission for the LTPO-X (COS) app is required only for that button. If denied, settings still work with the framework active; restart the scopes manually or reboot instead.
 
 ## Latest changes: Beta 1
 

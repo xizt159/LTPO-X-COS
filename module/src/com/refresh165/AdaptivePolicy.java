@@ -245,7 +245,7 @@ final class AdaptivePolicy {
             return p!=null&&!p.isPowerSaveMode()&&p.getCurrentThermalStatus()==PowerManager.THERMAL_STATUS_NONE;
         }catch(Throwable ignored){return false;}
     }
-    static String status(){return "Screen Tuner Beta 1 (20006): voteHook="+voteHook+" sceneHook="+sceneHook+" ready="+ready
+    static String status(){return "LTPO-X (COS) Beta 1 (20006): voteHook="+voteHook+" sceneHook="+sceneHook+" ready="+ready
         +" focusHook="+focusHook+" sceneReads="+sceneReads+" scenePackage="+pkg+" sceneFull="+sceneFull+" config="+Config.debugStatus()+" cap="+cap+" ime="+ime+" rawIme="+rawIme+" imeShowDelayMs=300"+" imeSource="+imeSource+" policyChanges="+policyChanges+" voteReads="+voteReads
         +" profile="+Config.effectiveRate()+" baselinePriority="+baselinePriority+" specsDeoptimized="+specsDeoptimized
         +" resolvedPhysicalMax="+resolvedPhysicalMax+" resolvedRenderMax="+resolvedRenderMax

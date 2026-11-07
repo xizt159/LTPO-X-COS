@@ -52,7 +52,7 @@
 
 - Refined passive inline-video handling for supported ambient UI redraws.
 - Integrated the existing ColorOS refresh-rate menu rather than adding a separate row.
-- Added Screen Tuner branding, English/Arabic settings and root-assisted scope restart.
+- Added LTPO-X (COS) branding, English/Arabic settings and root-assisted scope restart.
 - Added an experimental real120Hz idle fallback for144Hz; this was not a confirmed1Hz fix.
 
 ## v2.0.0-unified-exp1
