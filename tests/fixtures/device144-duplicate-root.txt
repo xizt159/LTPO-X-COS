@@ -1,0 +1,8 @@
+  Layer [1476] VRI-com.android.settings/com.android.settings.Settings$DisplaySettingsActivity#1476
+    visible reason= buffer=54275501719677 frame=357
+    ownerPid=12637
+    isVisible=true
+  Layer [1476] VRI-com.android.settings/com.android.settings.Settings$DisplaySettingsActivity#1476
+    visible reason= buffer=54275501719677 frame=357
+    ownerPid=12637
+    isVisible=true
