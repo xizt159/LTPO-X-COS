@@ -11,9 +11,20 @@ import android.view.*;
 import android.widget.*;
 import java.util.*;
 
-/** Rounded cards, two distinct sections, no internet/root permission in the UI. */
+/** Rounded cards, two distinct sections, and root only for explicitly requested actions. */
 public final class MainActivity extends Activity {
     private boolean restarting;
+    private Switch refreshRateOverlaySwitch;
+    private boolean refreshRateOverlayUpdating;
+    private boolean refreshRateOverlaySyncing;
+    @Override protected void onResume(){
+        super.onResume();
+        if(refreshRateOverlaySwitch!=null&&!refreshRateOverlayUpdating){
+            refreshRateOverlaySyncing=true;
+            refreshRateOverlaySwitch.setChecked(android.provider.Settings.Global.getInt(getContentResolver(),RefreshRateOverlay.SETTING,0)!=0);
+            refreshRateOverlaySyncing=false;
+        }
+    }
     @Override protected void attachBaseContext(Context base){
         String lang=base.createDeviceProtectedStorageContext().getSharedPreferences("ui",0).getString("language","system");
         if(!lang.equals("system")){android.content.res.Configuration c=new android.content.res.Configuration(base.getResources().getConfiguration());c.setLocale(new java.util.Locale(lang));base=base.createConfigurationContext(c);}super.attachBaseContext(base);
@@ -121,7 +132,45 @@ public final class MainActivity extends Activity {
         SeekBar bar=new SeekBar(this);bar.setMax(max-min);bar.setProgress(state.getInt(key,def)-min);bar.setContentDescription(tr(title));bar.setEnabled(on("aod"));group.addView(bar,new LinearLayout.LayoutParams(-1,dp(45)));
         bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onStartTrackingTouch(SeekBar b){}public void onProgressChanged(SeekBar b,int n,boolean user){value.setText(tr(title)+": "+(n+min)+suffix);}public void onStopTrackingTouch(SeekBar b){Bundle next=new Bundle();next.putInt(key,b.getProgress()+min);write(next);}});
     }
-    private void footer(){LinearLayout l=group("التفعيل");info(l,"فعّل LTPO-X (COS) داخل LSPosed للنظام والإعدادات وSystemUI وAOD، ثم أعد التشغيل. لا تفعّل FreshShift أو ColorOS AOD أو موديول هرتز آخر معه. تعديل التردد والخصائص يعمل من هنا؛ تغييرات إتاحة AOD قد تحتاج إعادة فتح صفحته أو إعادة التشغيل.");action(l,"فتح إعدادات الشاشة","لمراجعة خيارات النظام",()->{try{startActivity(new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS));}catch(Exception ignored){}});}
+    private void footer(){
+        LinearLayout l=group("التفعيل");
+        Switch overlay=new Switch(this);refreshRateOverlaySwitch=overlay;
+        overlay.setContentDescription(tr("إظهار معدل التحديث"));
+        overlay.setChecked(android.provider.Settings.Global.getInt(getContentResolver(),RefreshRateOverlay.SETTING,0)!=0);
+        overlay.setOnCheckedChangeListener((button,enabled)->{
+            if(!refreshRateOverlaySyncing)setRefreshRateOverlay(overlay,enabled);
+        });
+        LinearLayout row=new LinearLayout(this);row.setGravity(Gravity.CENTER_VERTICAL);row.setPadding(0,dp(10),0,dp(10));l.addView(row);
+        LinearLayout labels=vertical();row.addView(labels,new LinearLayout.LayoutParams(0,-2,1));
+        labels.addView(text("إظهار معدل التحديث",16,ink));
+        labels.addView(text("عرض الرقم الأخضر لمعدل تحديث الشاشة أعلى اليسار. يتطلب صلاحية الروت.",12,muted));
+        row.addView(overlay);row.setOnClickListener(v->{if(overlay.isEnabled())overlay.setChecked(!overlay.isChecked());});
+        info(l,"فعّل LTPO-X (COS) داخل LSPosed للنظام والإعدادات وSystemUI وAOD، ثم أعد التشغيل. لا تفعّل FreshShift أو ColorOS AOD أو موديول هرتز آخر معه. تعديل التردد والخصائص يعمل من هنا؛ تغييرات إتاحة AOD قد تحتاج إعادة فتح صفحته أو إعادة التشغيل.");
+        action(l,"فتح إعدادات الشاشة","لمراجعة خيارات النظام",()->{try{startActivity(new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS));}catch(Exception ignored){}});
+    }
+    private void setRefreshRateOverlay(Switch toggle,boolean enabled){
+        if(refreshRateOverlayUpdating)return;
+        refreshRateOverlayUpdating=true;toggle.setEnabled(false);
+        new Thread(()->{
+            String failure=null;
+            try{RefreshRateOverlay.setEnabled(enabled);}
+            catch(Exception e){failure=e.getMessage()==null?e.getClass().getSimpleName():e.getMessage();}
+            final String error=failure;
+            runOnUiThread(()->{
+                refreshRateOverlayUpdating=false;
+                if(isFinishing())return;
+                toggle.setEnabled(true);
+                if(error!=null){
+                    refreshRateOverlaySyncing=true;
+                    toggle.setChecked(!enabled);
+                    refreshRateOverlaySyncing=false;
+                    new AlertDialog.Builder(this).setTitle(tr("إظهار معدل التحديث"))
+                            .setMessage(tr("تعذر تغيير الإعداد. تأكد من منح صلاحية الروت، ثم حاول مجددًا.")+"\n\n"+error)
+                            .setPositiveButton(tr("حسنًا"),null).show();
+                }
+            });
+        },"RefreshRateOverlay").start();
+    }
     private void apps(){
         new Thread(()->{
             List<ResolveInfo> raw=getPackageManager().queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER),0);
