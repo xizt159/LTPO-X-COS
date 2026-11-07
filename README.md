@@ -4,7 +4,7 @@
 
 LTPO-X (COS) brings display tuning, per-app refresh policies and AOD customization into one APK-based Xposed module. It aims to keep interaction smooth at your selected rate, allow low-refresh idle where supported, and apply temporary limits during typing and passive video playback.
 
-**Current release:** `1.0.0-beta.1` (Beta 1) · **versionCode:** `20006` · **package:** `com.refresh165`
+**Current release:** `1.0.0-beta.2` (Beta 2) · **versionCode:** `20007` · **package:** `com.refresh165`
 
 [Download APK](https://github.com/xizt159/LTPO-X-COS/releases/latest) · [Releases](https://github.com/xizt159/LTPO-X-COS/releases) · [Changelog](CHANGELOG.md) · [Arabic Beta 1 guide](README-BETA1-AR.md)
 

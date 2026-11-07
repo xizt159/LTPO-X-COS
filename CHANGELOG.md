@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.0.0-beta.2 — Beta 2 — 2026-11-07
+
+### Added
+- Added an Activation toggle for Android's Show refresh rate developer option. The toggle requests root access, verifies the global setting, and reports failures.
+- Added a tag-triggered GitHub release workflow that signs APKs with the configured release keystore and replaces the APK asset when rerunning the same tag.
+- Added manual release workflow dispatch for rebuilding an existing version tag.
+
+### Release
+- Increased `versionCode` to `20007`.
+- The release must be signed with the same key as existing installations to install as an update.
+
 ## v1.0.0-beta.1 — Beta 1 — 2026-11-06
 
 ### Added
