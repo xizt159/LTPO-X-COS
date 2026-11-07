@@ -152,7 +152,27 @@ Use a fresh output directory. The local builder creates a local test signing key
 ANDROID_HOME=/path/to/Android/Sdk ./build.sh
 ```
 
-The shell builder creates a separate local key if none is provided. Self-built APKs do not automatically share the release signature. CI uses an ephemeral test key and does not publish release APKs automatically.
+The shell builder creates a separate local key if none is provided. Self-built APKs do not automatically share the release signature. The verification workflow uses an ephemeral test key; release APKs are built by the tag-triggered workflow below.
+
+### GitHub release builds
+
+Pushing a tag matching the `versionName` in `version.properties` (for example, `v1.0.0-beta.2`) runs the signed release workflow. A new version tag creates a new GitHub Release and retains older releases. Rerunning the workflow for the same tag replaces that release's APK asset.
+
+Configure these repository Actions secrets before pushing a release tag:
+
+- `RELEASE_KEYSTORE_BASE64` — Base64-encoded release keystore.
+- `RELEASE_KEYSTORE_PASSWORD` — keystore password.
+- `RELEASE_KEY_ALIAS` — signing key alias.
+- `RELEASE_KEY_PASSWORD` — signing key password.
+
+The keystore must be the same one used for the APKs being updated. For a new release, increment both `versionName` and `versionCode` in `version.properties`, commit the change, then create and push the matching tag:
+
+```bash
+git tag v1.0.0-beta.2
+git push origin v1.0.0-beta.2
+```
+
+Use the actual `versionName` from `version.properties`. To replace the APK for that same version, rerun **Build and publish release APK** for the existing tag from the Actions page; do not move a published tag. A newly generated key cannot update installs signed by a different key.
 
 **Host regression suites:**
 

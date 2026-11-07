@@ -9,7 +9,7 @@ VERSION_FILE="$ROOT/version.properties"
 
 VER_NAME="$(grep '^versionName=' "$VERSION_FILE" | cut -d= -f2)"
 VER_CODE="$(grep '^versionCode=' "$VERSION_FILE" | cut -d= -f2)"
-echo "Refresh165 v$VER_NAME ($VER_CODE)"
+echo "LTPO-X (COS) v$VER_NAME ($VER_CODE)"
 
 SDK="${ANDROID_SDK:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
 BT="${BUILD_TOOLS:-$(ls -d "$SDK"/build-tools/* 2>/dev/null | sort -V | tail -1)}"
@@ -24,9 +24,10 @@ APKSIGNER="$BT/apksigner"
 
 KEYSTORE="${KEYSTORE:-$ROOT/keystore.jks}"
 KS_PASS="${KS_PASS:-modpass}"
+KS_KEY_PASS="${KS_KEY_PASS:-$KS_PASS}"
 KS_ALIAS="${KS_ALIAS:-modkey}"
 OUT="${OUT:-$ROOT/out}"
-APK_NAME="${APK_NAME:-Refresh165-v$VER_NAME.apk}"
+APK_NAME="${APK_NAME:-LTPO-X-COS-v$VER_NAME.apk}"
 
 for f in "$D8" "$AAPT2" "$ZIPALIGN" "$APKSIGNER" "$PLATFORM" "$LIBXPOSED"; do
   [ -e "$f" ] || { echo "Missing dependency: $f" >&2; exit 1; }
@@ -79,11 +80,11 @@ if [ ! -f "$KEYSTORE" ]; then
   echo "Keystore not found; generating a self-signed debug key: $KEYSTORE"
   keytool -genkeypair -keystore "$KEYSTORE" -alias "$KS_ALIAS" \
     -keyalg RSA -keysize 2048 -validity 10000 \
-    -storepass "$KS_PASS" -keypass "$KS_PASS" \
-    -dname "CN=Refresh165, OU=Dev, O=Refresh165, L=NA, S=NA, C=CN"
+    -storepass "$KS_PASS" -keypass "$KS_KEY_PASS" \
+    -dname "CN=LTPO-X (COS), OU=Release, O=LTPO-X-COS, L=NA, S=NA, C=US"
 fi
 "$APKSIGNER" sign --ks "$KEYSTORE" --ks-key-alias "$KS_ALIAS" \
-  --ks-pass "pass:$KS_PASS" --key-pass "pass:$KS_PASS" \
+  --ks-pass "pass:$KS_PASS" --key-pass "pass:$KS_KEY_PASS" \
   --out "$OUT/$APK_NAME" "$OUT/apk/aligned.apk"
 "$APKSIGNER" verify --verbose "$OUT/$APK_NAME" | head -5
 
