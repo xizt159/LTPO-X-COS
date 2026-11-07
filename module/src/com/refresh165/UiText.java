@@ -5,6 +5,7 @@ private static final Map<String,String> EN=new LinkedHashMap<>();
 static {
 EN.put("إظهار معدل التحديث","Show refresh rate");
 EN.put("عرض الرقم الأخضر لمعدل تحديث الشاشة أعلى اليسار. يتطلب صلاحية الروت.","Show the green display refresh-rate indicator in the top-left corner. Root access is required.");
+EN.put("تعذر قراءة حالة معدل التحديث. امنح صلاحية الروت، ثم حاول مجددًا.","Could not read the refresh-rate overlay state. Grant root access, then try again.");
 EN.put("تعذر تغيير الإعداد. تأكد من منح صلاحية الروت، ثم حاول مجددًا.","Could not change the setting. Make sure root access is granted, then try again.");
 EN.put("تفعيل سياسات تردد التطبيقات","Enable per-app refresh policies");
 EN.put("ثابت أو متغير لكل تطبيق؛ تُضبط من صفحة التطبيقات المدعومة في إعدادات النظام","Choose fixed or variable per app in the native Supported apps page");
