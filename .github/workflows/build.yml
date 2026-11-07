@@ -49,12 +49,12 @@ jobs:
           python tests/supported_apps_check.py "$RUNNER_TEMP/test-supported"
       - name: Build with an ephemeral test key
         env:
-          KEYSTORE: ${{ runner.temp }}/screen-tuner-test.jks
-          OUT: ${{ runner.temp }}/screen-tuner-build
-          APK_NAME: ScreenTuner-CI-test.apk
+          KEYSTORE: ${{ runner.temp }}/ltpo-x-cos-test.jks
+          OUT: ${{ runner.temp }}/ltpo-x-cos-build
+          APK_NAME: LTPO-X-COS-CI-test.apk
           BUILD_TOOLS: ${{ env.ANDROID_HOME }}/build-tools/34.0.0
         run: bash build.sh
       - uses: actions/upload-artifact@v4
         with:
-          name: ScreenTuner-CI-test-only
-          path: ${{ runner.temp }}/screen-tuner-build/ScreenTuner-CI-test.apk
+          name: LTPO-X-COS-CI-test-only
+          path: ${{ runner.temp }}/ltpo-x-cos-build/LTPO-X-COS-CI-test.apk

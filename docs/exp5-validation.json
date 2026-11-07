@@ -62,8 +62,8 @@
   "deviceInstalledOrRestarted": false,
   "basis": "exp4; reviewed current matching Settings APK and live read-only device captures",
   "sha256": {
-    "ScreenTuner-exp5.apk": "9a75e6453a0952b5eb6afb8fcf780ddb0cfde31fbf3b6fec0dd8ac3a920aad39",
-    "ScreenTuner-exp5-source.zip": "47316769612abf38d0c47e1174ba61c34e6818b609c12f1766675ef4fd756e65",
+    "LTPO-X-COS-exp5.apk": "9a75e6453a0952b5eb6afb8fcf780ddb0cfde31fbf3b6fec0dd8ac3a920aad39",
+    "LTPO-X-COS-exp5-source.zip": "47316769612abf38d0c47e1174ba61c34e6818b609c12f1766675ef4fd756e65",
     "changes-from-exp4.diff": "c86e3efb7b2e01ad712a2f659fa2352c6a4ba00512b854cad79d418ab920a20b"
   }
 }

@@ -13,6 +13,6 @@ final class AodTapPolicy {
         int action=AodTapSequence.tap(time,showing==1);if(action==AodTapSequence.BLOCK)return true;
         if(action==AodTapSequence.REVEAL)return showing==1;
         if(!AodAccess.pocketClear(c))return true;
-        try{Object pm=c.getSystemService(Context.POWER_SERVICE);XposedHelpers.callMethod(pm,"wakeUp",SystemClock.uptimeMillis(),4,"ScreenTuner:AOD_NEXT_TAP");return true;}catch(Throwable ignored){return false;}
+        try{Object pm=c.getSystemService(Context.POWER_SERVICE);XposedHelpers.callMethod(pm,"wakeUp",SystemClock.uptimeMillis(),4,"LTPO-X-COS:AOD_NEXT_TAP");return true;}catch(Throwable ignored){return false;}
     }
 }

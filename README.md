@@ -6,7 +6,7 @@ LTPO-X (COS) brings display tuning, per-app refresh policies and AOD customizati
 
 **Current release:** `1.0.0-beta.1` (Beta 1) · **versionCode:** `20006` · **package:** `com.refresh165`
 
-[Download APK](https://github.com/MaZaGnGy/Screen-Tuner/releases/download/v1.0.0-beta.1/ScreenTuner-beta1.apk) · [Releases](https://github.com/MaZaGnGy/Screen-Tuner/releases) · [Changelog](CHANGELOG.md) · [Arabic Beta 1 guide](README-BETA1-AR.md)
+[Download APK](https://github.com/xizt159/LTPO-X-COS/releases/latest) · [Releases](https://github.com/xizt159/LTPO-X-COS/releases) · [Changelog](CHANGELOG.md) · [Arabic Beta 1 guide](README-BETA1-AR.md)
 
 ## Compatibility and requirements
 
@@ -156,12 +156,12 @@ The shell builder creates a separate local key if none is provided. Self-built A
 **Host regression suites:**
 
 ```bash
-python run_tests.py /tmp/screen-tuner-pure
-python tests/run_lifecycle.py /tmp/screen-tuner-lifecycle
-python tests/provider_check.py /tmp/screen-tuner-provider
-python tests/settings_check.py /tmp/screen-tuner-settings
-ANDROID_JAR=/path/to/android.jar python tests/widgets_check.py /tmp/screen-tuner-widgets
-ANDROID_JAR=/path/to/android.jar python tests/supported_apps_check.py /tmp/screen-tuner-supported
+python run_tests.py /tmp/ltpo-x-cos-pure
+python tests/run_lifecycle.py /tmp/ltpo-x-cos-lifecycle
+python tests/provider_check.py /tmp/ltpo-x-cos-provider
+python tests/settings_check.py /tmp/ltpo-x-cos-settings
+ANDROID_JAR=/path/to/android.jar python tests/widgets_check.py /tmp/ltpo-x-cos-widgets
+ANDROID_JAR=/path/to/android.jar python tests/supported_apps_check.py /tmp/ltpo-x-cos-supported
 ```
 
 These suites use Android/OEM stand-ins and recorded fixtures. They validate adapter behavior and policy isolation; they cannot establish physical panel performance or visual correctness on a phone.
