@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Refresh165 — 从源码构建可安装 APK
-# 依赖：JDK 17+、Android SDK（build-tools 34+、platform android-34+）
+# Build an installable APK from source.
+# Requirements: JDK 17+ and Android SDK (build-tools 34+, platform android-34+).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
@@ -29,30 +29,30 @@ OUT="${OUT:-$ROOT/out}"
 APK_NAME="${APK_NAME:-Refresh165-v$VER_NAME.apk}"
 
 for f in "$D8" "$AAPT2" "$ZIPALIGN" "$APKSIGNER" "$PLATFORM" "$LIBXPOSED"; do
-  [ -e "$f" ] || { echo "缺少依赖: $f" >&2; exit 1; }
+  [ -e "$f" ] || { echo "Missing dependency: $f" >&2; exit 1; }
 done
 
-echo "[1/6] 清理"
+echo "[1/6] Cleaning output"
 rm -rf "$OUT"; mkdir -p "$OUT/classes" "$OUT/dex" "$OUT/apk"
 
-echo "[2/6] 编译 Java"
+echo "[2/6] Compiling Java"
 find "$MOD/src" -name '*.java' > "$OUT/sources.txt"
 "$JAVAC" --release 11 -encoding UTF-8 \
   -cp "$PLATFORM:$LIBXPOSED" \
   -d "$OUT/classes" @"$OUT/sources.txt"
 
-echo "[3/6] d8 生成 dex"
+echo "[3/6] Generating DEX with d8"
 find "$OUT/classes/com" -name '*.class' > "$OUT/classes.txt"
 "$D8" --release --min-api 29 --lib "$PLATFORM" --output "$OUT/dex" @"$OUT/classes.txt"
 
-echo "[4/6] 资源编译与链接"
+echo "[4/6] Compiling and linking resources"
 "$AAPT2" compile --dir "$MOD/res" -o "$OUT/res.zip"
 sed -E "s/android:versionCode=\"[0-9]+\"/android:versionCode=\"$VER_CODE\"/; s/android:versionName=\"[^\"]*\"/android:versionName=\"$VER_NAME\"/" \
   "$MOD/AndroidManifest.xml" > "$OUT/AndroidManifest.xml"
 "$AAPT2" link -o "$OUT/apk/base.apk" -I "$PLATFORM" \
   --manifest "$OUT/AndroidManifest.xml" "$OUT/res.zip"
 
-echo "[5/6] 打包（含 assets 与根目录 META-INF/xposed）"
+echo "[5/6] Packaging (including assets and root META-INF/xposed)"
 python3 - "$MOD" "$OUT" <<'PY'
 from pathlib import Path
 import sys, zipfile
@@ -68,15 +68,15 @@ with zipfile.ZipFile(out/"apk"/"base.apk") as src, \
             continue
         rel = str(f.relative_to(assets))
         dst.write(f, "assets/" + rel)
-        # 现代 Xposed API 的入口/scope/module.prop 必须在 APK 根 META-INF/xposed/
+        # Modern Xposed API entry points, scopes, and module.prop must be at the APK root under META-INF/xposed/.
         if rel.startswith("META-INF/"):
             dst.write(f, rel)
 PY
 
-echo "[6/6] 对齐与签名"
+echo "[6/6] Aligning and signing"
 "$ZIPALIGN" -f -p 4 "$OUT/apk/unsigned.apk" "$OUT/apk/aligned.apk"
 if [ ! -f "$KEYSTORE" ]; then
-  echo "未找到 keystore，生成一个自签名调试密钥：$KEYSTORE"
+  echo "Keystore not found; generating a self-signed debug key: $KEYSTORE"
   keytool -genkeypair -keystore "$KEYSTORE" -alias "$KS_ALIAS" \
     -keyalg RSA -keysize 2048 -validity 10000 \
     -storepass "$KS_PASS" -keypass "$KS_PASS" \
@@ -87,5 +87,5 @@ fi
   --out "$OUT/$APK_NAME" "$OUT/apk/aligned.apk"
 "$APKSIGNER" verify --verbose "$OUT/$APK_NAME" | head -5
 
-echo "完成: $OUT/$APK_NAME"
+echo "Build complete: $OUT/$APK_NAME"
 shasum -a 256 "$OUT/$APK_NAME"
