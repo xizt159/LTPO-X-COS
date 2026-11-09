@@ -34,7 +34,7 @@ runtime requirement or turn these Java hooks into kernel-level hooks.
 | Faster adaptive idle | Shortens recognized default delays to 600ms/200ms; application-specific timings are preserved. No fixed sequence of refresh rates is forced. |
 | Selected-rate animations | Adjusts supported launcher and transition requests to the selected rate, retaining thermal and relevant fingerprint restrictions. |
 | Keyboard cap | Applies a temporary **60Hz ceiling after 300ms** of keyboard visibility, allowing the entrance animation to finish first. The previous policy resumes after dismissal. |
-| Passive video policy | Uses a **60Hz ceiling with native 30Hz behavior where applicable**, only after supported playback is detected and input/content settle. Interaction restores the selected ceiling. Supported fullscreen and inline playback are handled without permanently capping the whole app. **120Hz is not selected for video.** |
+| Passive video policy | Uses a **60Hz ceiling with native 30Hz behavior where applicable**, only after supported playback is detected and input/content settle. Google Photos can be detected from advancing video-surface evidence even without a media session. Interaction restores the selected ceiling. Supported fullscreen and inline playback are handled without permanently capping the whole app. **120Hz is not selected for video.** |
 | Disable LTPO | Requests the selected rate during ordinary use. Temporary keyboard/video limits and thermal constraints still apply. |
 | Experimental 144Hz fallback | Optionally requests the real 120Hz timing during verified idle, then returns to 144Hz on interaction. **144Hz-to-1Hz remains unresolved.** |
 | Show refresh rate | Toggles Android's green refresh-rate indicator in the top-left corner. Changing the developer option requires granting root access when prompted. |
@@ -132,7 +132,7 @@ See [CHANGELOG.md](CHANGELOG.md) for earlier builds.
 | exp4 additions | Lift toggle, fixed AOD brightness and battery-only display were host-tested; physical-device confirmation remains pending in the recorded results. |
 | Beta 1 per-app policies | **757 host-side assertions passed.** The current native Settings APK and its 99-app page/overflow menu were reviewed on the development device. The development-device user confirmed the per-app policy works across all available fixed/variable choices. System telemetry independently recorded Variable120Hz on the Gallery app while the global rate was165Hz. |
 
-1Hz requires suitable static content and native operating conditions; it is not guaranteed during scrolling, animations, playback or every application. Video detection requires supported playback/content evidence; external PiP and multiwindow are excluded from the passive-video override. A rendering FPS overlay may differ from the physical panel's refresh behavior.
+1Hz requires suitable static content and native operating conditions; it is not guaranteed during scrolling, animations, playback or every application. Video detection requires supported playback/content evidence; Google Photos without a media session additionally requires a detectable advancing video surface. External PiP and multiwindow are excluded from the passive-video override. A rendering FPS overlay may differ from the physical panel's refresh behavior.
 
 ## Building and tests
 
