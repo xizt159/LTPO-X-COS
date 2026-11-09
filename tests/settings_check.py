@@ -15,6 +15,6 @@ files['com/refresh165/MenuIndicator.java']='package com.refresh165;final class M
 files['android/os/Handler.java']=files['android/os/Handler.java'].replace('public class Handler {','public class Handler {public boolean postDelayed(Runnable r,long delay){return true;}')
 for name,body in files.items():f=src/name;f.parent.mkdir(parents=True,exist_ok=True);f.write_text(body,encoding='utf-8')
 classes.mkdir(parents=True,exist_ok=True)
-actual=[r/'module/src/com/refresh165'/name for name in ['AppProfiles.java','Config.java','ConfigProvider.java','SettingsIntegration.java','xp/XposedHelpers.java']]
+actual=[r/'module/src/com/refresh165'/name for name in ['AppProfiles.java','Config.java','ConfigProvider.java','SettingsIntegration.java','BatteryDisplayPolicy.java','xp/XposedHelpers.java']]
 subprocess.run(['javac','--release','11','-encoding','UTF-8','-d',str(classes),*[str(f) for f in src.rglob('*.java')],*[str(f) for f in actual]],check=True)
 subprocess.run(['java','-cp',str(classes),'com.refresh165.SettingsTest'],check=True)
