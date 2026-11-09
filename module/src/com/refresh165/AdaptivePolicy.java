@@ -194,7 +194,19 @@ final class AdaptivePolicy {
                 interactive=isInteractive();if(!interactive){IME.clear();ime=false;rawIme=false;}VideoIdlePolicy.screen(interactive);recompute();
             });}
         },f,null,worker,Context.RECEIVER_NOT_EXPORTED);
+        android.content.IntentFilter batteryFilter=new android.content.IntentFilter(android.content.Intent.ACTION_BATTERY_CHANGED);
+        android.content.Intent sticky=context.registerReceiver(new android.content.BroadcastReceiver(){
+            @Override public void onReceive(Context c,android.content.Intent i){updateBattery(i);}
+        },batteryFilter,null,worker,Context.RECEIVER_EXPORTED);
+        updateBattery(sticky);
         powerRegistered=true;interactive=isInteractive();recompute();
+    }
+    private static void updateBattery(android.content.Intent i){
+        if(i==null||!android.content.Intent.ACTION_BATTERY_CHANGED.equals(i.getAction()))return;
+        int level=i.getIntExtra(android.os.BatteryManager.EXTRA_LEVEL,-1);
+        int scale=i.getIntExtra(android.os.BatteryManager.EXTRA_SCALE,-1);
+        boolean plugged=i.getIntExtra(android.os.BatteryManager.EXTRA_PLUGGED,0)!=0;
+        worker.post(()->{if(BatteryDisplayPolicy.update(level,scale,plugged))recompute();});
     }
     private static boolean powerRegistered;
     private static void enqueue(Scene s){
@@ -249,7 +261,7 @@ final class AdaptivePolicy {
         +" focusHook="+focusHook+" sceneReads="+sceneReads+" scenePackage="+pkg+" sceneFull="+sceneFull+" config="+Config.debugStatus()+" cap="+cap+" ime="+ime+" rawIme="+rawIme+" imeShowDelayMs=300"+" imeSource="+imeSource+" policyChanges="+policyChanges+" voteReads="+voteReads
         +" profile="+Config.effectiveRate()+" baselinePriority="+baselinePriority+" specsDeoptimized="+specsDeoptimized
         +" resolvedPhysicalMax="+resolvedPhysicalMax+" resolvedRenderMax="+resolvedRenderMax
-        +" animation="+AnimationPolicy.status()+" idle144="+Idle144Policy.status()+" video="+VideoIdlePolicy.status()+","+Hook.videoCandidateStatus()+" reserve="+NativeReservePolicy.status()+" lowIdle="+Hook.lowBrightnessStatus()+" reason="+reason+" fault="+fault;}
+        +" animation="+AnimationPolicy.status()+" idle144="+Idle144Policy.status()+" video="+VideoIdlePolicy.status()+","+Hook.videoCandidateStatus()+" batteryDisplay="+BatteryDisplayPolicy.status()+" reserve="+NativeReservePolicy.status()+" lowIdle="+Hook.lowBrightnessStatus()+" reason="+reason+" fault="+fault;}
     private static int integer(Class<?>c,String name)throws Exception{Field f=c.getDeclaredField(name);f.setAccessible(true);return f.getInt(null);}
     private static Object field(Object o,String name){
         if(o==null)return null;for(Class<?>c=o.getClass();c!=null;c=c.getSuperclass())try{Field f=c.getDeclaredField(name);f.setAccessible(true);return f.get(o);}

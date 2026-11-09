@@ -12,10 +12,16 @@ files['com/refresh165/SupportedAppsIntegration.java']='package com.refresh165;fi
 files['android/util/SparseArray.java']=files['android/util/SparseArray.java'].replace('public T get(int k)', 'public void remove(int k){m.remove(k);}public T get(int k)')
 files['com/android/server/display/mode/Vote.java']=files['com/android/server/display/mode/Vote.java'].replace('int PRIORITY_USER_SETTING_PEAK_RENDER_FRAME_RATE=10', 'int PRIORITY_USER_SETTING_PEAK_REFRESH_RATE=9,PRIORITY_USER_SETTING_PEAK_RENDER_FRAME_RATE=10')
 files['com/refresh165/Config.java']=files['com/refresh165/Config.java'].replace('static boolean foregroundOwner', 'static String debugStatus(){return "mock";}static boolean foregroundOwner')
+files['com/refresh165/Config.java']=files['com/refresh165/Config.java'].replace('"battery_only").contains(key)', '"battery_only","battery_profile").contains(key)').replace('static int rate(){return hz;}', 'static int rate(){return hz;}static int validRate(int rate){return rate==60||rate==90||rate==120||rate==144||rate==165?rate:165;}')
 files['com/android/server/wm/DisplayContent.java']='package com.android.server.wm;public class DisplayContent {public Object mCurrentFocus,mInputMethodWindow;public void applySurfaceChangesTransaction(){}public int getDisplayId(){return 0;}public boolean updateFocusedWindowLocked(int mode,boolean update,int top){return true;}public static class Window {public android.view.WindowManager.LayoutParams mAttrs=new android.view.WindowManager.LayoutParams();public Session mSession=new Session();public String pkg="com.android.chrome";public String getOwningPackage(){return pkg;}public Task getTask(){return new Task();}}public static class Session {public int mPid=42;}public static class Task {public static boolean multi;public boolean inMultiWindowMode(){return multi;}}}'
+files['android/os/BatteryManager.java']='package android.os;public class BatteryManager {public static final String EXTRA_LEVEL="level",EXTRA_SCALE="scale",EXTRA_PLUGGED="plugged";}'
+files['android/content/Context.java']=files['android/content/Context.java'].replace('RECEIVER_NOT_EXPORTED=4','RECEIVER_NOT_EXPORTED=4,RECEIVER_EXPORTED=2').replace('public Object registerReceiver(','public Intent registerReceiver(')
+files['android/content/IntentFilter.java']=files['android/content/IntentFilter.java'].replace('public class IntentFilter {','public class IntentFilter {public IntentFilter(){}public IntentFilter(String s){}')
+files['android/content/Intent.java']=files['android/content/Intent.java'].replace('public class Intent {','public class Intent {public int getIntExtra(String key,int fallback){return fallback;}public static final String ACTION_BATTERY_CHANGED="battery";')
 for name,text in files.items():
  f=src/name;f.parent.mkdir(parents=True,exist_ok=True);f.write_text(text,encoding='utf-8')
 actual=[repo/'module/src/com/refresh165'/name for name in ['AppProfiles.java','Idle144Policy.java','RootFrame.java','AodAccess.java','AodTapSequence.java','AodTapPolicy.java','AodBackdropPolicy.java','PanoramicStatusPolicy.java','UiText.java','SystemVersion.java','ScopeRestart.java','AodPolicy.java','AodValues.java','AodLiftPolicy.java','NativeTables.java','AdfrVersion.java','VideoIdlePolicy.java','VideoFrameEvidence.java','NativeReservePolicy.java','AdaptivePolicy.java','AdaptiveState.java','ImeLatch.java','NativeIdlePolicy.java','AnimationPolicy.java','RateProfile.java','Hook.java','xp/IXposedHookLoadPackage.java','xp/callbacks/XC_LoadPackage.java']]
+actual.append(repo/"module/src/com/refresh165/BatteryDisplayPolicy.java")
 actual.append(repo/"tests/VideoPolicyTest.java")
 actual.append(repo/"tests/UnifiedTest.java")
 actual.append(repo/"tests/Exp2Test.java")
@@ -24,6 +30,7 @@ actual.append(repo/"tests/Exp4Test.java")
 actual.append(repo/"tests/AppPolicyTest.java")
 actual.append(repo/"tests/FocusSceneTest.java")
 actual.append(repo/"tests/SystemVersionTest.java")
+actual.append(repo/"tests/BatteryDisplayPolicyTest.java")
 out.mkdir(exist_ok=True)
 subprocess.run(['javac','--release','11','-encoding','UTF-8','-d',str(out),*[str(f) for f in src.rglob('*.java')],*[str(f) for f in actual]],check=True)
 subprocess.run(['java','-cp',str(out),'com.refresh165.LifecycleTest'],check=True)
@@ -43,3 +50,5 @@ subprocess.run(["java","-cp",str(out),"com.refresh165.AppPolicyTest"],check=True
 subprocess.run(["java","-cp",str(out),"com.refresh165.FocusSceneTest"],check=True)
 
 subprocess.run(["java","-cp",str(out),"com.refresh165.SystemVersionTest"],check=True)
+
+subprocess.run(["java","-cp",str(out),"com.refresh165.BatteryDisplayPolicyTest"],check=True)

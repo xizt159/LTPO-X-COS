@@ -55,6 +55,13 @@ EN.put("مستقل عن تعديلات الشاشة والترددات","Indepen
 EN.put("السماح بالخمول في السطوع المنخفض","Allow idle at low brightness");
 EN.put("الفيديو: 60 / 30 Hz عند المشاهدة","Video:60 /30Hz while watching");
 EN.put("تعطيل LTPO أثناء التفاعل العادي","Disable LTPO during ordinary interaction");
+EN.put("ملف توفير البطارية","Battery profile");
+EN.put("سقف التردد عند انخفاض البطارية","Low-battery refresh cap");
+EN.put("حد البطارية: ","Battery threshold: ");
+EN.put("سقف التردد: ","Refresh-rate ceiling: ");
+EN.put("مفتاح اختياري؛ يعمل أثناء فصل الشاحن وعند حد البطارية أو دونه. يستعيد السقف الطبيعي عند الشحن أو ارتفاع النسبة.","Optional profile; applies while unplugged at or below the threshold. Restores the normal ceiling when charging or above the threshold.");
+EN.put("تُطبّق السياسة عند هذه النسبة أو أقل.","Applies at this battery percentage or lower.");
+EN.put("أقصى تردد للشاشة؛ يظل السلوك التكيفي الأصلي فعالًا.","Maximum display refresh rate; native adaptive behavior remains enabled.");
 EN.put("تخصيص سطوع البداية في الظلام","Customize initial brightness in darkness");
 EN.put("تخصيص سطوع البداية في الضوء","Customize initial brightness in light");
 EN.put("أنيميشن على التردد المختار","Animations at the selected rate");

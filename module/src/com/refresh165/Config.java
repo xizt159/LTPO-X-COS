@@ -9,8 +9,8 @@ import java.util.*;
 /** Immutable, validated snapshots. No provider calls on render/WM hot paths. */
 final class Config {
     static final Uri URI=Uri.parse("content://com.refresh165.config");
-    static final String[] KEYS={"refresh","low_light","tables","fast_idle","animation","ime","video","menu","disable_ltpo","bulk_apps","gate144","aod","panoramic","all_day","block_tap","dark_visible","initial_dark","initial_bright","running_brightness","hide_wallpaper","block_lift","fixed_brightness","battery_only","app_policies"};
-    static final boolean[] DEFAULTS={true,true,true,true,true,true,true,true,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,true};
+    static final String[] KEYS={"refresh","low_light","tables","fast_idle","animation","ime","video","menu","disable_ltpo","bulk_apps","gate144","aod","panoramic","all_day","block_tap","dark_visible","initial_dark","initial_bright","running_brightness","hide_wallpaper","block_lift","fixed_brightness","battery_only","app_policies","battery_profile"};
+    static final boolean[] DEFAULTS={true,true,true,true,true,true,true,true,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,true,false};
     private static volatile Bundle values=new Bundle();
     private static volatile Map<String,AppProfiles.Rule> profiles=Collections.emptyMap();
     private static Context context;
@@ -29,7 +29,7 @@ final class Config {
     static AppProfiles.Rule profile(String pkg){return refresh("app_policies")?profiles.get(pkg):null;}
     static boolean foregroundOwner(String pkg){return !foreground.isEmpty()&&foreground.equals(pkg);}
     static AppProfiles.Rule currentProfile(){return profile(foreground);}
-    static int profileRate(String pkg){AppProfiles.Rule r=profile(pkg);return r!=null&&r.rate>0?r.rate:rate();}
+    static int profileRate(String pkg){AppProfiles.Rule r=profile(pkg);return BatteryDisplayPolicy.limit(r!=null&&r.rate>0?r.rate:rate());}
     static int effectiveRate(){return profileRate(foreground);}
     static boolean fixed(){AppProfiles.Rule r=currentProfile();return r==null?refresh("disable_ltpo"):r.fixed();}
     static boolean explicitProfile(){AppProfiles.Rule r=currentProfile();return r!=null&&r.explicit();}
