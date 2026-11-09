@@ -29,6 +29,17 @@ public final class MainActivity extends Activity {
     private boolean arabic(){return getResources().getConfiguration().getLocales().get(0).getLanguage().equals("ar");}
     private String tr(String value){return UiText.translate(value,arabic());}
     private String version(){try{return getPackageManager().getPackageInfo(getPackageName(),0).versionName;}catch(Exception e){return "1.0.0-beta.1";}}
+    private String systemVersion(){
+        return SystemVersion.label(systemProperty("ro.oxygenos.version","ro.oxygen.version"),
+                systemProperty("ro.build.version.oplusrom"),Build.DISPLAY+" "+systemProperty("ro.build.version.ota"),Build.VERSION.RELEASE);
+    }
+    private String systemProperty(String... keys){
+        for(String key:keys)try{
+            String value=(String)Class.forName("android.os.SystemProperties").getMethod("get",String.class,String.class).invoke(null,key,"");
+            if(value!=null&&!value.isEmpty())return value;
+        }catch(ReflectiveOperationException|SecurityException|LinkageError ignored){}
+        return "";
+    }
     private void settings(){new AlertDialog.Builder(this).setTitle(tr("الإعدادات")).setMessage(tr("الإصدار: ")+version()).setPositiveButton(tr("اللغة"),(d,w)->{
         String selected=createDeviceProtectedStorageContext().getSharedPreferences("ui",0).getString("language","system");String[] ids={"system","en","ar"};int index=java.util.Arrays.asList(ids).indexOf(selected);
         new AlertDialog.Builder(this).setTitle(tr("اللغة")).setSingleChoiceItems(new String[]{tr("لغة النظام"),"English","العربية"},Math.max(0,index),(dialog,n)->{createDeviceProtectedStorageContext().getSharedPreferences("ui",0).edit().putString("language",ids[n]).apply();dialog.dismiss();recreate();}).setNegativeButton(tr("إلغاء"),null).show();
@@ -62,7 +73,7 @@ public final class MainActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(dark?0:View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
         root=vertical();root.setPadding(dp(20),dp(16),dp(20),0);root.setBackgroundColor(bg);root.setLayoutDirection(arabic()?View.LAYOUT_DIRECTION_RTL:View.LAYOUT_DIRECTION_LTR);setContentView(root);
         LinearLayout header=new LinearLayout(this);header.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);header.setGravity(Gravity.CENTER_VERTICAL);TextView title=text("LTPO-X (COS)",28,ink);title.setTypeface(null,Typeface.BOLD);header.addView(title,new LinearLayout.LayoutParams(0,-2,1));ImageButton restart=new ImageButton(this);restart.setImageDrawable(new ToolbarIcon(ink));restart.setBackground(shape(card,24));restart.setContentDescription(tr("إعادة تشغيل النطاقات"));restart.setPadding(dp(13),dp(13),dp(13),dp(13));restart.setOnClickListener(v->restartScopes());header.addView(restart,new LinearLayout.LayoutParams(dp(48),dp(48)));Button gear=new Button(this);gear.setText("⚙");gear.setContentDescription(tr("الإعدادات"));gear.setOnClickListener(v->settings());header.addView(gear,new LinearLayout.LayoutParams(dp(55),dp(48)));root.addView(header);
-        root.addView(text("OnePlus 15  ·  ColorOS 17  ·  "+version(),13,muted));
+        root.addView(text(systemVersion()+"  ·  "+version(),13,muted));
         LinearLayout tabs=new LinearLayout(this);tabs.setPadding(0,dp(15),0,dp(12));root.addView(tabs);
         for(int i=0;i<2;i++){final int selected=i;TextView t=text(i==0?"الشاشة والترددات":"Always-on Display",15,tab==i?0xff102327:muted);t.setGravity(Gravity.CENTER);t.setPadding(dp(8),dp(13),dp(8),dp(13));t.setBackground(shape(tab==i?accent:card,18));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-2,1);lp.setMargins(dp(3),0,dp(3),0);tabs.addView(t,lp);t.setOnClickListener(v->{tab=selected;render();});}
         ScrollView scroll=new ScrollView(this);scroll.setFillViewport(true);root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));body=vertical();body.setPadding(0,0,0,dp(24));scroll.addView(body);

@@ -15,7 +15,7 @@ files['com/refresh165/Config.java']=files['com/refresh165/Config.java'].replace(
 files['com/android/server/wm/DisplayContent.java']='package com.android.server.wm;public class DisplayContent {public Object mCurrentFocus,mInputMethodWindow;public void applySurfaceChangesTransaction(){}public int getDisplayId(){return 0;}public boolean updateFocusedWindowLocked(int mode,boolean update,int top){return true;}public static class Window {public android.view.WindowManager.LayoutParams mAttrs=new android.view.WindowManager.LayoutParams();public Session mSession=new Session();public String pkg="com.android.chrome";public String getOwningPackage(){return pkg;}public Task getTask(){return new Task();}}public static class Session {public int mPid=42;}public static class Task {public static boolean multi;public boolean inMultiWindowMode(){return multi;}}}'
 for name,text in files.items():
  f=src/name;f.parent.mkdir(parents=True,exist_ok=True);f.write_text(text,encoding='utf-8')
-actual=[repo/'module/src/com/refresh165'/name for name in ['AppProfiles.java','Idle144Policy.java','RootFrame.java','AodAccess.java','AodTapSequence.java','AodTapPolicy.java','AodBackdropPolicy.java','PanoramicStatusPolicy.java','UiText.java','ScopeRestart.java','AodPolicy.java','AodValues.java','AodLiftPolicy.java','NativeTables.java','AdfrVersion.java','VideoIdlePolicy.java','VideoFrameEvidence.java','NativeReservePolicy.java','AdaptivePolicy.java','AdaptiveState.java','ImeLatch.java','NativeIdlePolicy.java','AnimationPolicy.java','RateProfile.java','Hook.java','xp/IXposedHookLoadPackage.java','xp/callbacks/XC_LoadPackage.java']]
+actual=[repo/'module/src/com/refresh165'/name for name in ['AppProfiles.java','Idle144Policy.java','RootFrame.java','AodAccess.java','AodTapSequence.java','AodTapPolicy.java','AodBackdropPolicy.java','PanoramicStatusPolicy.java','UiText.java','SystemVersion.java','ScopeRestart.java','AodPolicy.java','AodValues.java','AodLiftPolicy.java','NativeTables.java','AdfrVersion.java','VideoIdlePolicy.java','VideoFrameEvidence.java','NativeReservePolicy.java','AdaptivePolicy.java','AdaptiveState.java','ImeLatch.java','NativeIdlePolicy.java','AnimationPolicy.java','RateProfile.java','Hook.java','xp/IXposedHookLoadPackage.java','xp/callbacks/XC_LoadPackage.java']]
 actual.append(repo/"tests/VideoPolicyTest.java")
 actual.append(repo/"tests/UnifiedTest.java")
 actual.append(repo/"tests/Exp2Test.java")
@@ -23,6 +23,7 @@ actual.append(repo/"tests/Exp3Test.java")
 actual.append(repo/"tests/Exp4Test.java")
 actual.append(repo/"tests/AppPolicyTest.java")
 actual.append(repo/"tests/FocusSceneTest.java")
+actual.append(repo/"tests/SystemVersionTest.java")
 out.mkdir(exist_ok=True)
 subprocess.run(['javac','--release','11','-encoding','UTF-8','-d',str(out),*[str(f) for f in src.rglob('*.java')],*[str(f) for f in actual]],check=True)
 subprocess.run(['java','-cp',str(out),'com.refresh165.LifecycleTest'],check=True)
@@ -40,3 +41,5 @@ subprocess.run(["java","-cp",str(out),"com.refresh165.Exp4Test"],check=True)
 subprocess.run(["java","-cp",str(out),"com.refresh165.AppPolicyTest"],check=True)
 
 subprocess.run(["java","-cp",str(out),"com.refresh165.FocusSceneTest"],check=True)
+
+subprocess.run(["java","-cp",str(out),"com.refresh165.SystemVersionTest"],check=True)

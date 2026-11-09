@@ -1,3 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?><resources>
-<string name="app_name">LTPO-X (COS)</string><string name="module_desc">LTPO-X (COS): Advanced display control module for ColorOS &amp; OxygenOS. Global high refresh rate (165Hz) management, dynamic input/video throttling, and AOD optimization.</string>
+<string name="app_name">LTPO-X (COS)</string><string name="module_desc">LTPO-X (COS): Advanced display control module for compatible OnePlus and OPPO devices running OxygenOS or ColorOS. Global high refresh rate management, dynamic input/video throttling, and AOD optimization.</string>
 <string name="module_author">Refresh165 local fork</string></resources>

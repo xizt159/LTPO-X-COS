@@ -1,6 +1,6 @@
 # LTPO-X (COS)
 
-**Adaptive refresh-rate policies and Always-On Display controls for OnePlus 15 on ColorOS 17.**
+**Adaptive refresh-rate policies and Always-On Display controls for compatible OnePlus and OPPO devices running OxygenOS or ColorOS.**
 
 LTPO-X (COS) brings display tuning, per-app refresh policies and AOD customization into one APK-based Xposed module. It aims to keep interaction smooth at your selected rate, allow low-refresh idle where supported, and apply temporary limits during typing and passive video playback.
 
@@ -10,10 +10,10 @@ LTPO-X (COS) brings display tuning, per-app refresh policies and AOD customizati
 
 ## Compatibility and requirements
 
-- Development device: **OnePlus 15 / CPH2745**, including the development unit converted from Chinese to Indian firmware.
-- Reviewed firmware: **CPH2745_17.0.0.102(EX01), ColorOS 17**.
+- Target devices: **OnePlus and OPPO** models running compatible OxygenOS or ColorOS firmware; support can vary with vendor APIs and release.
+- Reviewed reference firmware: **OnePlus 15 / CPH2745**, running **CPH2745_17.0.0.102(EX01), ColorOS 17**. **OxygenOS 16 is also reported working.**
 - A rooted device with a working hooking framework supporting **modern libxposed API 102**. Legacy-only Xposed support is insufficient.
-- This is a device-specific experimental module. Other firmware versions, OxygenOS and other OnePlus/OPPO devices are **not confirmed compatible**.
+- This remains an experimental module for compatible OnePlus and OPPO firmware; behavior depends on the system's vendor APIs and can vary by model and release.
 
 The APK does not flash DTBO, replace DRM kernel modules or create new physical
 panel timings. It is an Xposed/libxposed module and still requires a hook
@@ -28,7 +28,7 @@ runtime requirement or turn these Java hooks into kernel-level hooks.
 | --- | --- |
 | Display master switch | Enables display modifications independently of AOD. |
 | Interaction refresh rate | Select **60 / 90 / 120 / 144 / 165Hz** as the ordinary interaction ceiling. |
-| Native Settings selector | Expands the existing ColorOS refresh-rate selector, retaining the native COUI popup and adding an up/down indicator. |
+| Native Settings selector | Expands the existing OPlus refresh-rate selector, retaining the native popup and adding an up/down indicator. |
 | Low-brightness idle | Adjusts recognized eligibility conditions to permit deeper idle where supported, while retaining DC eligibility. |
 | 1Hz idle tables | Changes recognized 60/90/120/165Hz idle tables; unknown schemas are preserved. A table change is not a guarantee of 1Hz in every scene. |
 | Faster adaptive idle | Shortens recognized default delays to 600ms/200ms; application-specific timings are preserved. No fixed sequence of refresh rates is forced. |
@@ -87,7 +87,7 @@ Block lift-to-show, fixed AOD brightness and battery-only AOD are off by default
 ## App interface
 
 - Separate **Display & Brightness** and **AOD** sections.
-- English and Arabic, with a language selector and version information.
+- English and Arabic, with a language selector and module version; the header reports the detected OxygenOS/ColorOS version when available.
 - A circular-arrows **Restart scopes** button beside Settings, restarting **SystemUI and OPlus AOD**.
 - Root warning before scope restart; no root prompt simply from opening the app.
 - No Internet permission requested by the APK.
