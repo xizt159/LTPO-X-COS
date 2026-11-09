@@ -28,6 +28,7 @@ runtime requirement or turn these Java hooks into kernel-level hooks.
 | --- | --- |
 | Display master switch | Enables display modifications independently of AOD. |
 | Interaction refresh rate | Select **60 / 90 / 120 / 144 / 165Hz** as the ordinary interaction ceiling. |
+| Low-battery display profile | Optional and off by default. When unplugged at or below the chosen **10–50%** threshold, caps the global and per-app refresh ceiling (default **120Hz**); charging or rising above the threshold restores the configured rates. LTPO's native adaptive behavior remains enabled. |
 | Native Settings selector | Expands the existing OPlus refresh-rate selector, retaining the native popup and adding an up/down indicator. |
 | Low-brightness idle | Adjusts recognized eligibility conditions to permit deeper idle where supported, while retaining DC eligibility. |
 | 1Hz idle tables | Changes recognized 60/90/120/165Hz idle tables; unknown schemas are preserved. A table change is not a guarantee of 1Hz in every scene. |

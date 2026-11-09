@@ -16,6 +16,8 @@ public final class ConfigProvider extends ContentProvider {
             b.putInt("rate",Config.validRate(prefs.getInt("rate",165)));
             b.putInt("dark",prefs.getInt("dark",80));b.putInt("bright",prefs.getInt("bright",160));b.putInt("multiplier",prefs.getInt("multiplier",160));
             b.putInt("fixed",Math.max(2,Math.min(255,prefs.getInt("fixed",80))));
+            b.putInt("battery_threshold",Math.max(5,Math.min(50,prefs.getInt("battery_threshold",20))));
+            b.putInt("battery_rate",Config.validRate(prefs.getInt("battery_rate",120)));
             b.putString("app_profiles",prefs.getString("app_profiles",""));
             b.putString("apps",prefs.getString("apps",""));return b;
         }
@@ -31,6 +33,8 @@ public final class ConfigProvider extends ContentProvider {
         if(owner)for(String k:Config.KEYS)if(extras.containsKey(k))e.putBoolean(k,extras.getBoolean(k));
         if(extras.containsKey("rate"))e.putInt("rate",Config.validRate(extras.getInt("rate")));
         if(owner){for(String k:new String[]{"dark","bright","multiplier","fixed"})if(extras.containsKey(k))e.putInt(k,Math.max(k.equals("multiplier")?25:k.equals("fixed")?2:1,Math.min(k.equals("multiplier")?300:255,extras.getInt(k))));
+            if(extras.containsKey("battery_threshold"))e.putInt("battery_threshold",Math.max(5,Math.min(50,extras.getInt("battery_threshold"))));
+            if(extras.containsKey("battery_rate"))e.putInt("battery_rate",Config.validRate(extras.getInt("battery_rate")));
             if(extras.containsKey("apps")){String s=extras.getString("apps","");if(s.length()>200000)throw new IllegalArgumentException("Too many packages");e.putString("apps",s);}}
         if(!e.commit())throw new IllegalStateException("Cannot save configuration");
         getContext().getContentResolver().notifyChange(Config.URI,null);return Bundle.EMPTY;

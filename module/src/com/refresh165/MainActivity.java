@@ -100,6 +100,10 @@ public final class MainActivity extends Activity {
         toggle(l,"disable_ltpo","تعطيل LTPO أثناء التفاعل العادي","يثبّت التردد المختار؛ حدود الفيديو والكيبورد والحرارة تظل نافذة","refresh");
         toggle(l,"app_policies","تفعيل سياسات تردد التطبيقات","ثابت أو متغير لكل تطبيق؛ تُضبط من صفحة التطبيقات المدعومة في إعدادات النظام","refresh");
         action(l,"التطبيقات المدعومة","إعدادات الشاشة ← معدل التحديث ← التطبيقات المدعومة",()->{try{startActivity(new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS));}catch(Exception ignored){}});
+        l=group("ملف توفير البطارية");
+        toggle(l,"battery_profile","سقف التردد عند انخفاض البطارية","مفتاح اختياري؛ يعمل أثناء فصل الشاحن وعند حد البطارية أو دونه. يستعيد السقف الطبيعي عند الشحن أو ارتفاع النسبة.","refresh");
+        chooseInt(l,"battery_threshold","حد البطارية: ",20,new int[]{10,15,20,25,30,35,40,50},"%","تُطبّق السياسة عند هذه النسبة أو أقل.");
+        chooseInt(l,"battery_rate","سقف التردد: ",120,hz," Hz","أقصى تردد للشاشة؛ يظل السلوك التكيفي الأصلي فعالًا.");
         l=group("LTPO والتفاعل");
         toggle(l,"low_light","السماح بالخمول في السطوع المنخفض","الحفاظ على DC مع بوابة الخمول المقيّدة بشروط النظام","refresh");
         toggle(l,"tables","جداول خمول 1 Hz","تعديل الجداول المعروفة لـ60 / 90 / 120 / 165؛ النتيجة تحتاج قياسًا","refresh");
@@ -139,6 +143,16 @@ public final class MainActivity extends Activity {
         TextView value=text(title+": "+state.getInt(key,def)+suffix,14,ink);value.setPadding(0,dp(12),0,0);group.addView(value);
         SeekBar bar=new SeekBar(this);bar.setMax(max-min);bar.setProgress(state.getInt(key,def)-min);bar.setContentDescription(tr(title));bar.setEnabled(on("aod"));group.addView(bar,new LinearLayout.LayoutParams(-1,dp(45)));
         bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onStartTrackingTouch(SeekBar b){}public void onProgressChanged(SeekBar b,int n,boolean user){value.setText(tr(title)+": "+(n+min)+suffix);}public void onStopTrackingTouch(SeekBar b){Bundle next=new Bundle();next.putInt(key,b.getProgress()+min);write(next);}});
+    }
+    private void chooseInt(LinearLayout group,String key,String title,int def,int[] options,String suffix,String summary){
+        int current=state.getInt(key,def);
+        action(group,title+current+suffix,summary,()->{
+            String[] choices=new String[options.length];int selected=0;
+            for(int i=0;i<options.length;i++){choices[i]=options[i]+suffix;if(options[i]==current)selected=i;}
+            new AlertDialog.Builder(this).setTitle(tr(title)).setSingleChoiceItems(choices,selected,(dialog,index)->{
+                Bundle next=new Bundle();next.putInt(key,options[index]);write(next);dialog.dismiss();render();
+            }).setNegativeButton(tr("إلغاء"),null).show();
+        });
     }
     private void footer(){
         LinearLayout l=group("التفعيل");
