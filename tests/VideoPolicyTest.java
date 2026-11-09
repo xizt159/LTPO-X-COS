@@ -27,6 +27,9 @@ public class VideoPolicyTest {
         yes(VideoFrameEvidence.parse(fixture,"com.google.android.youtube",99)==null);
         yes(VideoFrameEvidence.parse("Permission denied","com.google.android.youtube",42)==null);
         yes(VideoFrameEvidence.parse(fixture.replace("isOpaque=true","isOpaque=false"),"com.google.android.youtube",42)==null);
+        String photosFixture=fixture.replace("com.google.android.youtube","com.google.android.apps.photos");
+        VideoFrameEvidence.Sample photos=VideoFrameEvidence.parse(photosFixture,"com.google.android.apps.photos",42);
+        yes(photos!=null&&photos.videoFrame==5540);
         VideoFrameEvidence.Sample b=VideoFrameEvidence.parse(fixture.replace("frame=5540","frame=5570"),"com.google.android.youtube",42);
         yes(VideoFrameEvidence.stablePlayback(a,b,1000));
         yes(VideoFrameEvidence.stablePlayback(a,new VideoFrameEvidence.Sample(306,293,5570,1065),1000));
@@ -48,6 +51,12 @@ public class VideoPolicyTest {
         Handler main=new Handler(),io=new Handler();set(VideoIdlePolicy.class,"main",main);set(VideoIdlePolicy.class,"io",io);
         final int[] notifications={0};set(VideoIdlePolicy.class,"changed",(Runnable)()->notifications[0]++);
         VideoIdlePolicy.installInput(VideoPolicyTest.class.getClassLoader());yes((Boolean)get(VideoIdlePolicy.class,"inputHook"));
+        arm();set(VideoIdlePolicy.class,"playing",false);yes(!(Boolean)call("eligible",new Class<?>[0]));
+        set(VideoIdlePolicy.class,"pkg","com.google.android.apps.photos");yes((Boolean)call("eligible",new Class<?>[0]));
+        SystemClock.now=10000;set(VideoIdlePolicy.class,"active",false);set(VideoIdlePolicy.class,"previous",null);set(VideoIdlePolicy.class,"pending",false);
+        SurfaceSnapshot.dump=photosFixture;sample();yes(!VideoIdlePolicy.watching());
+        SystemClock.now=11000;SurfaceSnapshot.dump=photosFixture.replace("frame=5540","frame=5570").replace("frame=1062","frame=1065");
+        sample();yes(VideoIdlePolicy.watching());yes(VideoIdlePolicy.playingVideo());
         SystemClock.now=10000;arm();set(VideoIdlePolicy.class,"active",false);SurfaceSnapshot.dump=fixture;sample();yes(!VideoIdlePolicy.watching());
         SystemClock.now=11000;SurfaceSnapshot.dump=fixture.replace("frame=5540","frame=5570").replace("frame=1062","frame=1065");sample();yes(VideoIdlePolicy.watching());
         yes(VideoIdlePolicy.watchingPackage("com.google.android.youtube"));yes(!VideoIdlePolicy.watchingPackage("other.app"));

@@ -64,7 +64,7 @@ final class VideoIdlePolicy {
         on=on&&Config.refresh("video");
         if(Objects.equals(pkg,next)&&pid==process&&full==fullscreen&&enabled==on)return;
         pkg=next;pid=process;full=fullscreen;enabled=on;invalidate("scene-change");
-        Handler h=io;if(h!=null)h.post(()->{previous=null;select();});
+        Handler h=io;if(h!=null)h.post(()->{previous=null;select();if(sessionlessVideoTarget())schedule(0);});
     }
     static void screen(boolean on){if(!on){enabled=false;held=false;invalidate("screen-off");}}
     private static void select(){
@@ -74,7 +74,7 @@ final class VideoIdlePolicy {
         if(selected!=null&&candidate!=null&&selected.getSessionToken().equals(candidate.getSessionToken())){state(selected.getPlaybackState());return;}
         if(selected!=null&&callback!=null)try{selected.unregisterCallback(callback);}catch(Throwable ignored){}
         selected=candidate;previous=null;playing=false;invalidate("session-change");
-        if(candidate==null)return;
+        if(candidate==null){if(sessionlessVideoTarget())schedule(0);return;}
         final MediaController owner=candidate;
         callback=new MediaController.Callback(){
             @Override public void onPlaybackStateChanged(PlaybackState s){if(selected==owner)state(s);}
@@ -85,11 +85,12 @@ final class VideoIdlePolicy {
     private static void state(PlaybackState s){
         boolean now=s!=null&&s.getState()==PlaybackState.STATE_PLAYING&&s.getPlaybackSpeed()>0;
         if(playing!=now){playing=now;previous=null;invalidate(now?"playback-start":"not-playing");}
-        if(now)schedule(0);
+        if(now||sessionlessVideoTarget())schedule(0);
     }
-    private static boolean eligible(){return inputHook&&playing&&enabled&&full&&pid>0&&!pkg.isEmpty();}
+    private static boolean eligible(){return inputHook&&(playing||sessionlessVideoTarget())&&enabled&&full&&pid>0&&!pkg.isEmpty();}
+    private static boolean sessionlessVideoTarget(){return "com.google.android.apps.photos".equals(pkg);}
     static boolean recentInteraction(){return held||SystemClock.elapsedRealtime()-lastInput<QUIET_MS;}
-    static boolean playingVideo(){return playing&&enabled;}
+    static boolean playingVideo(){return enabled&&(playing||sessionlessVideoTarget()&&active);}
     static boolean pointerHeld(){return held;}
     static boolean watchingPackage(String name){return pkg.equals(name)&&watching();}
     static boolean watching(){return Config.refresh("video")&&active&&eligible()&&!recentInteraction()&&SystemClock.elapsedRealtime()<lease;}
