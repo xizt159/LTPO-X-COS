@@ -4,7 +4,7 @@
 
 LTPO-X (COS) brings display tuning, per-app refresh policies and AOD customization into one APK-based Xposed module. It aims to keep interaction smooth at your selected rate, allow low-refresh idle where supported, and apply temporary limits during typing and passive video playback.
 
-**Current release:** `1.0.0-beta.3` (Beta 3) · **versionCode:** `20008` · **package:** `com.ltpoxcos`
+**Current release:** `1.0.0-beta.4` (Beta 4) · **versionCode:** `20009` · **package:** `com.ltpoxcos`
 
 [Download APK](https://github.com/xizt159/LTPO-X-COS/releases/latest) · [Releases](https://github.com/xizt159/LTPO-X-COS/releases) · [Changelog](CHANGELOG.md) · [Arabic Beta 1 guide](README-BETA1-AR.md)
 
@@ -108,11 +108,11 @@ Block lift-to-show, fixed AOD brightness and battery-only AOD are off by default
 
 The Restart scopes button does **not** reload `system_server`; it does not replace the full reboot after an APK update. Root access is used by the Restart scopes button and the Show refresh rate toggle. If denied, module settings still work; restart the scopes manually or reboot instead.
 
-## Latest changes: Beta 3
+## Latest changes: Beta 4
 
-- Separate general and Battery Saver refresh-rate caps.
-- Renamed the app and module label to LTPO-X (COS) and migrated the package ID to `com.ltpoxcos`.
-- Beta 3 requires uninstalling the previous `com.refresh165` package; its saved settings must be configured again.
+- Separate general and Battery Saver refresh-rate caps. The general cap works whenever enabled; the Battery Saver cap applies only while Android Battery Saver is active.
+- The app label is LTPO-X (COS), with package ID `com.ltpoxcos`.
+- Beta 3 users can install Beta 4 as an update with the same signing certificate. Users upgrading directly from `com.refresh165` must uninstall that older package first; its settings do not migrate.
 
 See [CHANGELOG.md](CHANGELOG.md) for earlier builds.
 
@@ -151,7 +151,7 @@ The shell builder creates a separate local key if none is provided. Self-built A
 
 ### GitHub release builds
 
-Pushing a tag matching the `versionName` in `version.properties` (for example, `v1.0.0-beta.3`) runs the signed release workflow. A new version tag creates a new GitHub Release and retains older releases. To rebuild an existing version, run **Build and publish release APK** from the Actions page and enter its existing tag; that replaces the release's APK asset.
+Pushing a tag matching the `versionName` in `version.properties` (for example, `v1.0.0-beta.4`) runs the signed release workflow. A new version tag creates a new GitHub Release and retains older releases. To rebuild an existing version, run **Build and publish release APK** from the Actions page and enter its existing tag; that replaces the release's APK asset.
 
 Configure these repository Actions secrets before pushing a release tag:
 
@@ -163,8 +163,8 @@ Configure these repository Actions secrets before pushing a release tag:
 The keystore must be the same one used for the APKs being updated. For a new release, increment both `versionName` and `versionCode` in `version.properties`, commit the change, then create and push the matching tag:
 
 ```bash
-git tag v1.0.0-beta.3
-git push origin v1.0.0-beta.3
+git tag v1.0.0-beta.4
+git push origin v1.0.0-beta.4
 ```
 
 Use the actual `versionName` from `version.properties`. Do not move a published tag. A newly generated key cannot update installs signed by a different key.

@@ -1,29 +1,45 @@
 # Changelog
 
+## v1.0.0-beta.4 — Beta 4 — 2026-11-10
+
+### Changed
+
+- Prepared the release with separate general refresh-rate and Battery Saver refresh-rate caps.
+- The general cap applies whenever enabled; the Battery Saver cap applies only while Android Battery Saver is active.
+
+### Release
+
+- Increased `versionCode` to `20009`.
+- Renamed the app and Xposed module label to LTPO-X (COS) and changed its package ID to `com.ltpoxcos`. This package-ID change requires uninstalling the previous package before installing Beta 3.
+
 ## v1.0.0-beta.3 — Beta 3 — 2026-11-10
 
 ### Changed
-- Added separate general and Battery Saver refresh-rate caps. The general cap applies whenever enabled; the Battery Saver cap applies only while Android Battery Saver is active.
-- Renamed the app and Xposed module label to LTPO-X (COS) and changed its package ID to `com.ltpoxcos`. This package-ID change requires uninstalling the previous package before installing Beta 3.
+
+- Added Battery Saver refresh-rate caps. The general cap applies whenever enabled; the cap applies only while Android Battery Saver is active.
 
 ### Release
+
 - Increased `versionCode` to `20008`.
 - The release must be signed with the same key as existing installations to install as an update.
 
 ## v1.0.0-beta.2 — Beta 2 — 2026-11-07
 
 ### Added
+
 - Added an Activation toggle for Android's Show refresh rate developer option. The toggle requests root access, verifies the global setting, and reports failures.
 - Added a tag-triggered GitHub release workflow that signs APKs with the configured release keystore and replaces the APK asset when rerunning the same tag.
 - Added manual release workflow dispatch for rebuilding an existing version tag.
 
 ### Release
+
 - Increased `versionCode` to `20007`.
 - The release must be signed with the same key as existing installations to install as an update.
 
 ## v1.0.0-beta.1 — Beta 1 — 2026-11-06
 
 ### Added
+
 - Native focus-change event tracking and targeted deoptimization of verified focus callers.
 - Configuration-load retry for early-boot provider availability, plus loaded-build/profile diagnostics.
 - Native Supported apps selectors for Fixed and Variable 165/144/120/90/60Hz, Follow current and System default.
@@ -34,6 +50,7 @@
 - Validated, persistent, atomic profile writes restricted to the module app and platform-signed Settings.
 
 ### Policy behavior
+
 - Focused full-task app selects its rate; switching apps releases the previous profile.
 - Fixed profiles request matching physical/render floors during ordinary use and suppress native touch-idle on a private outgoing configuration copy.
 - Variable profiles allow native idle and override the global LTPO-disable choice for the selected app.
@@ -43,6 +60,7 @@
 - Native idle configuration is refreshed when entering/leaving a fixed hold.
 
 ### Validation and unchanged behavior
+
 - 757 host-side assertions passed.
 - Reviewed the matching Settings APK and the live99-app list/Restore to defaults menu on CPH2745_17.0.0.102(EX01).
 - The development-device user confirmed that per-app policy works across all available fixed/variable choices. Variable120Hz on Gallery was independently captured with a120Hz resolved ceiling/render rate while the global selection was165Hz.
@@ -58,7 +76,7 @@
 - Added native refresh-selector up/down indicator.
 - Moved Restart scopes beside Settings with a circular-arrows icon.
 - Added Arabic/English strings for the new controls.
--633 host-side assertions passed; new physical-device behavior remained pending confirmation.
+  -633 host-side assertions passed; new physical-device behavior remained pending confirmation.
 
 ## v2.0.2-unified-exp3
 
@@ -67,7 +85,7 @@
 - Used the installed LuckyTool native keyguard status-bar condition for panoramic AOD.
 - Added two taps to reveal AOD, followed by a separate tap to wake the lock screen.
 - Kept native proximity/upside-down checks for wake behavior.
--513 host-side assertions passed. The user subsequently reported all required behavior working except144Hz-to-1Hz.
+  -513 host-side assertions passed. The user subsequently reported all required behavior working except144Hz-to-1Hz.
 
 ## v2.0.1-unified-exp2
 

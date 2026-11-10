@@ -28,7 +28,7 @@ public final class MainActivity extends Activity {
     }
     private boolean arabic(){return getResources().getConfiguration().getLocales().get(0).getLanguage().equals("ar");}
     private String tr(String value){return UiText.translate(value,arabic());}
-    private String version(){try{return getPackageManager().getPackageInfo(getPackageName(),0).versionName;}catch(Exception e){return "1.0.0-beta.3";}}
+    private String version(){try{return getPackageManager().getPackageInfo(getPackageName(),0).versionName;}catch(Exception e){return "1.0.0-beta.4";}}
     private String systemVersion(){
         return SystemVersion.label(systemProperty("ro.oxygenos.version","ro.oxygen.version"),
                 systemProperty("ro.build.version.oplusrom"),Build.DISPLAY+" "+systemProperty("ro.build.version.ota"),Build.VERSION.RELEASE);
