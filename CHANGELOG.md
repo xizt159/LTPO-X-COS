@@ -6,6 +6,7 @@
 
 - Prepared the release with separate general refresh-rate and Battery Saver refresh-rate caps.
 - The general cap applies whenever enabled; the Battery Saver cap applies only while Android Battery Saver is active.
+- Fixed capped refresh rates being overridden by the native 165Hz vote.
 
 ### Release
 

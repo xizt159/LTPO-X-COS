@@ -25,6 +25,11 @@ final class BatteryDisplayPolicy {
         return true;
     }
 
+    static boolean capEnabled() {
+        return Config.refresh("refresh_cap")
+                || Config.refresh("battery_saver_cap") && batterySaver;
+    }
+
     static String status() {
         return "generalEnabled:"+Config.refresh("refresh_cap")
                 +",generalCeiling:"+Config.number("refresh_cap_rate",120,60,165)

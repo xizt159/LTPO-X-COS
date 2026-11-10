@@ -110,7 +110,7 @@ final class AdaptivePolicy {
                             fixed.add(physicalVote.invoke(null,(float)Config.effectiveRate(),(float)Config.effectiveRate()+0.01f));
                             fixed.add(renderVote.invoke(null,(float)Config.effectiveRate(),(float)Config.effectiveRate()+0.01f));copy.put(baselinePriority,combined.newInstance(fixed));
                         }
-                        if(limit<Config.effectiveRate()||activeRequest()){
+                        if(limit<Config.effectiveRate()||activeRequest()||BatteryDisplayPolicy.capEnabled()){
                             addCeiling(copy,priority,limit,limit);
                         }
                         p.setResult(copy);voteReads++;
@@ -228,7 +228,7 @@ final class AdaptivePolicy {
         if(!Config.refresh("ime")){IME.clear();ime=false;rawIme=false;}
         Idle144Policy.scene(pkg,pid,sceneFull,interactive&&!ime&&!rawIme&&!VideoIdlePolicy.playingVideo());
         int next=ready&&Config.on("refresh")?(interactive?Math.min(Config.effectiveRate(),ime||VideoIdlePolicy.watching()?60:Idle144Policy.active()?120:Config.effectiveRate()):0):0;
-        String policy=pkg+":"+Config.effectiveRate()+":"+Config.fixed()+":"+Config.explicitProfile();
+        String policy=pkg+":"+Config.effectiveRate()+":"+Config.fixed()+":"+Config.explicitProfile()+":"+BatteryDisplayPolicy.capEnabled();
         boolean held=holdFixedRate();if(held!=nativeFixedHeld){nativeFixedHeld=held;NativeIdlePolicy.refresh();NativeReservePolicy.refresh();}
         if(next==cap&&policy.equals(appliedAppPolicy))return;appliedAppPolicy=policy;cap=next;policyChanges++;
         Hook.refreshVideoPolicy();
