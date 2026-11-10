@@ -10,10 +10,10 @@ def main():
     output.mkdir(parents=True, exist_ok=True)
 
     sources = [
-        root / "module/src/com/refresh165/RateProfile.java",
-        root / "module/src/com/refresh165/AdaptiveState.java",
-        root / "module/src/com/refresh165/ImeLatch.java",
-        root / "module/src/com/refresh165/RefreshRateOverlay.java",
+        root / "module/src/com/ltpoxcos/RateProfile.java",
+        root / "module/src/com/ltpoxcos/AdaptiveState.java",
+        root / "module/src/com/ltpoxcos/ImeLatch.java",
+        root / "module/src/com/ltpoxcos/RefreshRateOverlay.java",
         root / "tests/PolicyTest.java",
         root / "tests/RefreshRateOverlayTest.java",
     ]
@@ -31,11 +31,11 @@ def main():
         check=True,
     )
     subprocess.run(
-        ["java", "-cp", str(output), "com.refresh165.PolicyTest"],
+        ["java", "-cp", str(output), "com.ltpoxcos.PolicyTest"],
         check=True,
     )
     subprocess.run(
-        ["java", "-cp", str(output), "com.refresh165.RefreshRateOverlayTest"],
+        ["java", "-cp", str(output), "com.ltpoxcos.RefreshRateOverlayTest"],
         check=True,
     )
 

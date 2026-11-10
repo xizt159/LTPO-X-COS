@@ -4,6 +4,7 @@
 
 ### Changed
 - Added separate general and Battery Saver refresh-rate caps. The general cap applies whenever enabled; the Battery Saver cap applies only while Android Battery Saver is active.
+- Renamed the app and Xposed module label to LTPO-X (COS) and changed its package ID to `com.ltpoxcos`. This package-ID change requires uninstalling the previous package before installing Beta 3.
 
 ### Release
 - Increased `versionCode` to `20008`.

@@ -1,5 +1,5 @@
-package com.refresh165;
-import android.os.*;import java.lang.reflect.*;import com.refresh165.xp.*;import com.android.server.wm.DisplayContent;
+package com.ltpoxcos;
+import android.os.*;import java.lang.reflect.*;import com.ltpoxcos.xp.*;import com.android.server.wm.DisplayContent;
 public class FocusSceneTest {
  static int checks;static void yes(boolean b){checks++;if(!b)throw new AssertionError("focus "+checks);}static Object get(String n)throws Exception{Field f=AdaptivePolicy.class.getDeclaredField(n);f.setAccessible(true);return f.get(null);}static void set(String n,Object v)throws Exception{Field f=AdaptivePolicy.class.getDeclaredField(n);f.setAccessible(true);f.set(null,v);}static void settle()throws Exception{((Handler)get("worker")).until(SystemClock.now);}
  public static void main(String[]args)throws Exception{

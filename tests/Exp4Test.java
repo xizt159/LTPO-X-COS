@@ -1,5 +1,5 @@
-package com.refresh165;
-import com.refresh165.xp.*;
+package com.ltpoxcos;
+import com.ltpoxcos.xp.*;
 public final class Exp4Test {
  static int checks;static void yes(boolean b){checks++;if(!b)throw new AssertionError("exp4 "+checks);}
  static Object call(Object o,String n,Class<?>[] types,Object...args)throws Exception{return XposedBridge.call(o.getClass().getDeclaredMethod(n,types),o,args);}

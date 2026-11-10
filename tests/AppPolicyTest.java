@@ -1,8 +1,8 @@
-package com.refresh165;
-import android.os.*;import android.util.SparseArray;import com.refresh165.xp.*;import java.lang.reflect.*;import com.android.server.display.mode.*;
+package com.ltpoxcos;
+import android.os.*;import android.util.SparseArray;import com.ltpoxcos.xp.*;import java.lang.reflect.*;import com.android.server.display.mode.*;
 public class AppPolicyTest {
  static int checks;static void yes(boolean b){checks++;if(!b)throw new AssertionError("app policy "+checks);}static void set(String n,Object v)throws Exception{Field f=AdaptivePolicy.class.getDeclaredField(n);f.setAccessible(true);f.set(null,v);}
- static void scene(String pkg,boolean full)throws Exception{Class<?> c=Class.forName("com.refresh165.AdaptivePolicy$Scene");Constructor<?> ctor=c.getDeclaredConstructor(String.class,int.class,boolean.class,boolean.class);ctor.setAccessible(true);Method m=AdaptivePolicy.class.getDeclaredMethod("scene",c);m.setAccessible(true);m.invoke(null,ctor.newInstance(pkg,42,false,full));}
+ static void scene(String pkg,boolean full)throws Exception{Class<?> c=Class.forName("com.ltpoxcos.AdaptivePolicy$Scene");Constructor<?> ctor=c.getDeclaredConstructor(String.class,int.class,boolean.class,boolean.class);ctor.setAccessible(true);Method m=AdaptivePolicy.class.getDeclaredMethod("scene",c);m.setAccessible(true);m.invoke(null,ctor.newInstance(pkg,42,false,full));}
  static boolean hasRate(Object o,float min,float max){if(o instanceof RateVote){RateVote r=(RateVote)o;return r.min==min&&Math.abs(r.max-max)<.02f;}if(o instanceof CombinedVote)for(Object v:((CombinedVote)o).mVotes)if(hasRate(v,min,max))return true;return false;}
  public static void main(String[] args)throws Exception{
   Config.flags.put("app_policies",true);Config.flags.put("video",false);Config.flags.put("ime",false);Config.hz=120;Config.profiles=AppProfiles.parse("com.test.fixed=f165;com.test.variable=v90;com.test.follow=follow;com.test.system=system");
