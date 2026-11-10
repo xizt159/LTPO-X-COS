@@ -1,10 +1,10 @@
-package com.refresh165;
+package com.ltpoxcos;
 import java.lang.reflect.*;
 import java.nio.file.*;
 import android.os.*;
 import android.view.*;
 import android.media.session.*;
-import com.refresh165.xp.XposedBridge;
+import com.ltpoxcos.xp.XposedBridge;
 
 public class VideoPolicyTest {
     static int checks;

@@ -49,7 +49,7 @@ def main():
     key=root/'keystore-op15.jks'
     if not key.exists():
         run('keytool','-genkeypair','-keystore',key,'-alias','op15','-keyalg','RSA','-keysize','2048','-validity','3650',
-            '-storepass','op15test','-keypass','op15test','-dname','CN=Refresh165 OP15 Experimental')
+            '-storepass','op15test','-keypass','op15test','-dname','CN=LTPO-X (COS) OP15 Experimental')
     apk=out/('LTPO-X-COS-'+values['versionName']+'.apk')
     run('java','-jar',bt/'lib/apksigner.jar','sign','--ks',key,'--ks-key-alias','op15','--ks-pass','pass:op15test','--key-pass','pass:op15test','--out',apk,out/'apk/aligned.apk')
     run('java','-jar',bt/'lib/apksigner.jar','verify','--verbose','--print-certs',apk)

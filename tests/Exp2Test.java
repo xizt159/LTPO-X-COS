@@ -1,6 +1,6 @@
-package com.refresh165;
+package com.ltpoxcos;
 import android.os.*;
-import com.refresh165.xp.*;
+import com.ltpoxcos.xp.*;
 import java.lang.reflect.*;
 public class Exp2Test {
  static int checks;static void yes(boolean value){checks++;if(!value)throw new AssertionError("exp2 "+checks);}

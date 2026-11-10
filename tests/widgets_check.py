@@ -22,12 +22,12 @@ f={
 'android/graphics/ColorFilter.java':'package android.graphics;public class ColorFilter {}',
 'android/graphics/Path.java':'package android.graphics;public class Path {public void moveTo(float x,float y){}public void lineTo(float x,float y){}}',
 'android/graphics/Canvas.java':'package android.graphics;public class Canvas {public int paths,arcs;public int save(){return 0;}public void translate(float x,float y){}public void scale(float x,float y){}public void drawPath(Path p,Paint b){paths++;}public void drawArc(float a,float b,float c,float d,float e,float f,boolean g,Paint p){arcs++;}public void restoreToCount(int s){}}',
-'com/refresh165/Config.java':'package com.refresh165;public class Config {static boolean enabled;static java.util.List<Runnable> listeners=new java.util.ArrayList<>();static boolean aod(String k){return enabled;}static void listen(Runnable r){listeners.add(r);}}',
-'com/refresh165/AodAccess.java':'package com.refresh165;public class AodAccess {static boolean asleep;static int showing;static boolean asleep(android.content.Context c){return asleep;}static int showing(android.content.Context c){return showing;}}',
-'com/refresh165/xp/XC_MethodHook.java':'package com.refresh165.xp;public class XC_MethodHook {protected void afterHookedMethod(MethodHookParam p){}public static class MethodHookParam {public Object thisObject;}}',
-'com/refresh165/xp/XposedBridge.java':'package com.refresh165.xp;public class XposedBridge {public static void hookMethod(java.lang.reflect.Method m,XC_MethodHook h){}}',
+'com/ltpoxcos/Config.java':'package com.ltpoxcos;public class Config {static boolean enabled;static java.util.List<Runnable> listeners=new java.util.ArrayList<>();static boolean aod(String k){return enabled;}static void listen(Runnable r){listeners.add(r);}}',
+'com/ltpoxcos/AodAccess.java':'package com.ltpoxcos;public class AodAccess {static boolean asleep;static int showing;static boolean asleep(android.content.Context c){return asleep;}static int showing(android.content.Context c){return showing;}}',
+'com/ltpoxcos/xp/XC_MethodHook.java':'package com.ltpoxcos.xp;public class XC_MethodHook {protected void afterHookedMethod(MethodHookParam p){}public static class MethodHookParam {public Object thisObject;}}',
+'com/ltpoxcos/xp/XposedBridge.java':'package com.ltpoxcos.xp;public class XposedBridge {public static void hookMethod(java.lang.reflect.Method m,XC_MethodHook h){}}',
 'com/android/systemui/shade/NotificationShadeWindowView.java':'package com.android.systemui.shade;public class NotificationShadeWindowView extends android.widget.FrameLayout {public NotificationShadeWindowView(android.content.Context c){super(c);}public void onAttachedToWindow(){}}',
-'com/refresh165/WidgetsTest.java':'''package com.refresh165;
+'com/ltpoxcos/WidgetsTest.java':'''package com.ltpoxcos;
 import android.content.*;import android.widget.*;import android.view.*;import android.graphics.*;import android.graphics.drawable.*;
 public class WidgetsTest {
  static int checks;static void yes(boolean b){checks++;if(!b)throw new AssertionError("widget "+checks);}
@@ -46,6 +46,6 @@ public class WidgetsTest {
 }
 for name,text in f.items():p=src/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text,encoding='utf-8')
 out.mkdir(parents=True,exist_ok=True)
-actual=[r/'module/src/com/refresh165'/name for name in ['AodBatteryPolicy.java','MenuIndicator.java','ToolbarIcon.java']]
+actual=[r/'module/src/com/ltpoxcos'/name for name in ['AodBatteryPolicy.java','MenuIndicator.java','ToolbarIcon.java']]
 subprocess.run(['javac','--release','11','-encoding','UTF-8','-cp',str(sdk.resolve()),'-d',str(out),*[str(p) for p in src.rglob('*.java')],*[str(p) for p in actual]],check=True)
-subprocess.run(['java','-cp',str(out),'com.refresh165.WidgetsTest'],check=True)
+subprocess.run(['java','-cp',str(out),'com.ltpoxcos.WidgetsTest'],check=True)

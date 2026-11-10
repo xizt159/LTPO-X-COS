@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.refresh165"
-    android:versionCode="20007"
-    android:versionName="1.0.0-beta.2">
+    package="com.ltpoxcos"
+    android:versionCode="20008"
+    android:versionName="1.0.0-beta.3">
     <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="34" />
 
     <queries><intent><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent></queries>
@@ -15,6 +15,6 @@
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
         </activity>
-        <provider android:name=".ConfigProvider" android:authorities="com.refresh165.config" android:exported="true" android:directBootAware="true" />
+        <provider android:name=".ConfigProvider" android:authorities="com.ltpoxcos.config" android:exported="true" android:directBootAware="true" />
     </application>
 </manifest>
