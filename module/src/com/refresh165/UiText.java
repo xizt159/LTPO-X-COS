@@ -45,6 +45,15 @@ EN.put("نقرتان خلال450ms؛ النقرة الواحدة لا توقظ �
 EN.put("تعذر إعادة التشغيل. أعد تشغيل النطاقات يدويًا.","Restart failed. Restart the scopes manually.");
 EN.put("إتاحة خيار البانوراما طوال اليوم في الإعدادات","Expose the all-day panoramic option in system settings");
 EN.put("سقف التفاعل والأنيميشن؛ الخمول يظل تكيفيًا","Ceiling for interaction and animations; idle remains adaptive");
+EN.put("سقوف التردد","Refresh-rate caps");
+EN.put("تفعيل سقف التردد العام","Enable general refresh-rate cap");
+EN.put("يعمل دائمًا، بصرف النظر عن وضع توفير البطارية.","Always applies, independently of Battery Saver.");
+EN.put("السقف العام: ","General cap: ");
+EN.put("أقصى تردد عادي؛ يظل السلوك التكيفي الأصلي فعالًا.","Maximum ordinary refresh rate; native adaptive behavior remains enabled.");
+EN.put("سقف تردد وضع توفير البطارية","Battery Saver refresh-rate cap");
+EN.put("يُطبّق هذا السقف فقط عند تفعيل وضع توفير البطارية في النظام.","Applies only while Android Battery Saver is enabled.");
+EN.put("سقف وضع توفير البطارية: ","Battery Saver cap: ");
+EN.put("حد مستقل يُطبّق عندما يكون وضع توفير البطارية فعالًا.","Separate ceiling used while Battery Saver is active.");
 EN.put("يبقي AOD ظاهرًا في مسار الإضاءة المنخفضة","Keep AOD visible through the low-light hiding path");
 EN.put("يستخدم قيمة النظام عند إيقاف هذا المفتاح","Use the native value when this switch is off");
 EN.put("اختيار متعدد · تحديد الكل · إلغاء الكل","Multiple selection · Select all · Clear all");

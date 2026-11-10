@@ -9,8 +9,8 @@ import java.util.*;
 /** Immutable, validated snapshots. No provider calls on render/WM hot paths. */
 final class Config {
     static final Uri URI=Uri.parse("content://com.refresh165.config");
-    static final String[] KEYS={"refresh","low_light","tables","fast_idle","animation","ime","video","menu","disable_ltpo","bulk_apps","gate144","aod","panoramic","all_day","block_tap","dark_visible","initial_dark","initial_bright","running_brightness","hide_wallpaper","block_lift","fixed_brightness","battery_only","app_policies","battery_profile"};
-    static final boolean[] DEFAULTS={true,true,true,true,true,true,true,true,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,true,false};
+    static final String[] KEYS={"refresh","low_light","tables","fast_idle","animation","ime","video","menu","disable_ltpo","bulk_apps","gate144","aod","panoramic","all_day","block_tap","dark_visible","initial_dark","initial_bright","running_brightness","hide_wallpaper","block_lift","fixed_brightness","battery_only","app_policies","refresh_cap","battery_saver_cap"};
+    static final boolean[] DEFAULTS={true,true,true,true,true,true,true,true,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,true,false,false};
     private static volatile Bundle values=new Bundle();
     private static volatile Map<String,AppProfiles.Rule> profiles=Collections.emptyMap();
     private static Context context;

@@ -12,12 +12,16 @@ public final class ConfigProvider extends ContentProvider {
     @Override public boolean onCreate(){prefs=getContext().createDeviceProtectedStorageContext().getSharedPreferences("display",0);return true;}
     @Override public synchronized Bundle call(String method,String arg,Bundle extras){
         if("read".equals(method)){
-            Bundle b=new Bundle();for(String k:Config.KEYS)b.putBoolean(k,prefs.getBoolean(k,Config.defaultOn(k)));
+            Bundle b=new Bundle();for(String k:Config.KEYS)b.putBoolean(k,
+                    k.equals("battery_saver_cap")
+                            ? prefs.getBoolean(k,prefs.getBoolean("battery_profile",false))
+                            : prefs.getBoolean(k,Config.defaultOn(k)));
             b.putInt("rate",Config.validRate(prefs.getInt("rate",165)));
             b.putInt("dark",prefs.getInt("dark",80));b.putInt("bright",prefs.getInt("bright",160));b.putInt("multiplier",prefs.getInt("multiplier",160));
             b.putInt("fixed",Math.max(2,Math.min(255,prefs.getInt("fixed",80))));
             b.putInt("battery_threshold",Math.max(5,Math.min(50,prefs.getInt("battery_threshold",20))));
             b.putInt("battery_rate",Config.validRate(prefs.getInt("battery_rate",120)));
+            b.putInt("refresh_cap_rate",Config.validRate(prefs.getInt("refresh_cap_rate",120)));
             b.putString("app_profiles",prefs.getString("app_profiles",""));
             b.putString("apps",prefs.getString("apps",""));return b;
         }
@@ -35,6 +39,7 @@ public final class ConfigProvider extends ContentProvider {
         if(owner){for(String k:new String[]{"dark","bright","multiplier","fixed"})if(extras.containsKey(k))e.putInt(k,Math.max(k.equals("multiplier")?25:k.equals("fixed")?2:1,Math.min(k.equals("multiplier")?300:255,extras.getInt(k))));
             if(extras.containsKey("battery_threshold"))e.putInt("battery_threshold",Math.max(5,Math.min(50,extras.getInt("battery_threshold"))));
             if(extras.containsKey("battery_rate"))e.putInt("battery_rate",Config.validRate(extras.getInt("battery_rate")));
+            if(extras.containsKey("refresh_cap_rate"))e.putInt("refresh_cap_rate",Config.validRate(extras.getInt("refresh_cap_rate")));
             if(extras.containsKey("apps")){String s=extras.getString("apps","");if(s.length()>200000)throw new IllegalArgumentException("Too many packages");e.putString("apps",s);}}
         if(!e.commit())throw new IllegalStateException("Cannot save configuration");
         getContext().getContentResolver().notifyChange(Config.URI,null);return Bundle.EMPTY;
