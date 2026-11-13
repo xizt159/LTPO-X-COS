@@ -6,7 +6,7 @@ LTPO-X (COS) brings display tuning, per-app refresh policies and AOD customizati
 
 **Current release:** `1.0.0-beta.4` (Beta 4) · **versionCode:** `20009` · **package:** `com.ltpoxcos`
 
-[Download APK](https://github.com/xizt159/LTPO-X-COS/releases/latest) · [Releases](https://github.com/xizt159/LTPO-X-COS/releases) · [Changelog](CHANGELOG.md) · [Arabic Beta 1 guide](README-BETA1-AR.md)
+[Download APK](https://github.com/xizt159/LTPO-X-COS/releases/latest) · [Releases](https://github.com/xizt159/LTPO-X-COS/releases) · [Changelog](CHANGELOG.md)
 
 ## Compatibility and requirements
 
@@ -89,7 +89,7 @@ Block lift-to-show, fixed AOD brightness and battery-only AOD are off by default
 ## App interface
 
 - Separate **Display & Brightness** and **AOD** sections.
-- English and Arabic, with a language selector and module version; the header reports the detected OxygenOS/ColorOS version when available.
+- English-only interface with the module version; the header reports the detected OxygenOS/ColorOS version when available.
 - A circular-arrows **Restart scopes** button beside Settings, restarting **SystemUI and OPlus AOD**.
 - Root warning before scope restart; no root prompt simply from opening the app.
 - No Internet permission requested by the APK.

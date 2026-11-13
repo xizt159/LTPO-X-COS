@@ -17,7 +17,7 @@ public class Exp2Test {
   Method allowed=AnimationPolicy.class.getDeclaredMethod("allowed",int.class);allowed.setAccessible(true);allowed.invoke(null,85);yes(Idle144Policy.active());
   Config.flags.put("disable_ltpo",true);yes(!Idle144Policy.active());Config.flags.remove("disable_ltpo");yes(Idle144Policy.active());
   Idle144Policy.interaction();yes(!Idle144Policy.active());yes((Integer)call(nativePolicy,"getWindowPreferredModeId",new Class<?>[]{int.class},4)==4);io.until(15000);yes(Idle144Policy.active());SurfaceSnapshot.dump=root.replace("frame=100","frame=101");io.until(15500);yes(!Idle144Policy.active());io.until(16000);yes(Idle144Policy.active());Idle144Policy.scene("test.app",42,true,false);yes(!Idle144Policy.active());Config.hz=165;Config.flags.clear();
-  yes(UiText.translate("الشاشة والترددات",false).equals("Display and refresh rates"));yes(UiText.translate("تردد التفاعل: 144 Hz",false).equals("Interaction rate: 144 Hz"));yes(UiText.translate("حفظ",true).equals("حفظ"));yes(!ScopeRestart.COMMAND.contains("system_server"));yes(ScopeRestart.COMMAND.contains("com.android.systemui"));
-  System.out.println("PASS "+checks+" exp2 ambient/144-transition/wallpaper/double-tap/language assertions");
+  yes(!ScopeRestart.COMMAND.contains("system_server"));yes(ScopeRestart.COMMAND.contains("com.android.systemui"));
+  System.out.println("PASS "+checks+" exp2 ambient/144-transition/wallpaper/double-tap assertions");
  }
 }

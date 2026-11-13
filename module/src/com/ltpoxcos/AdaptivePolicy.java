@@ -82,11 +82,16 @@ final class AdaptivePolicy {
                 @Override protected void afterHookedMethod(MethodHookParam p){
                     if(!Integer.valueOf(0).equals(p.args[0]) || p.getThrowable()!=null)return;
                     Object ranges=field(p.getResult(),"primary");
+                    if(cap>0){
+                        try{clampResolvedRanges(p.getResult(),cap);}
+                        catch(Throwable t){fault="resolved-cap-"+t.getClass().getSimpleName();}
+                    }
                     Object physical=field(field(ranges,"physical"),"max");
                     Object render=field(field(ranges,"render"),"max");
                     resolvedPhysicalMax=physical instanceof Number?((Number)physical).floatValue():-1f;
                     resolvedRenderMax=render instanceof Number?((Number)render).floatValue():-1f;
                     if(cap>0 && resolvedRenderMax>cap+0.1f)reason="ceiling-yielded-to-system-or-unsupported";
+                    else if(cap>0)reason="hard-ceiling-"+cap;
                 }
             });
             XC_MethodHook.Unhook b=XposedBridge.hookMethod(votes,new XC_MethodHook(){
@@ -222,6 +227,38 @@ final class AdaptivePolicy {
         List<Object> all=new ArrayList<>();Object old=copy.get(slot);if(old!=null)all.add(old);
         all.add(physicalVote.invoke(null,0f,physical+0.01f));all.add(renderVote.invoke(null,0f,render+0.01f));
         copy.put(slot,combined.newInstance(all));
+    }
+    static void clampResolvedRanges(Object specs,float ceiling)throws Exception{
+        clampRangePair(field(specs,"primary"),ceiling);
+        Object appRequest=field(specs,"appRequest");
+        if(appRequest!=null)clampRangePair(appRequest,ceiling);
+    }
+    private static void clampRangePair(Object ranges,float ceiling)throws Exception{
+        if(ranges==null)throw new IllegalStateException("refresh-ranges-unavailable");
+        boolean physical=clampRangeMax(field(ranges,"physical"),ceiling);
+        boolean render=clampRangeMax(field(ranges,"render"),ceiling);
+        if(!physical||!render)throw new IllegalStateException("refresh-ranges-unavailable");
+    }
+    private static boolean clampRangeMax(Object range,float ceiling)throws Exception{
+        if(range==null)return false;
+        Field max=null;
+        for(Class<?> c=range.getClass();c!=null&&max==null;c=c.getSuperclass()){
+            try{max=c.getDeclaredField("max");}
+            catch(NoSuchFieldException ignored){}
+        }
+        if(max==null)return false;
+        max.setAccessible(true);
+        Object value=max.get(range);
+        if(!(value instanceof Number))throw new IllegalStateException("refresh-range-max-type");
+        float current=((Number)value).floatValue();
+        if(current>ceiling){
+            if(max.getType()==float.class)max.setFloat(range,ceiling);
+            else if(max.getType()==Float.class)max.set(range,Float.valueOf(ceiling));
+            else if(max.getType()==double.class)max.setDouble(range,ceiling);
+            else if(max.getType()==Double.class)max.set(range,Double.valueOf(ceiling));
+            else throw new IllegalStateException("refresh-range-max-type");
+        }
+        return true;
     }
     private static void recompute(){
         VideoIdlePolicy.scene(pkg,pid,sceneFull,interactive&&!ime&&!rawIme);
