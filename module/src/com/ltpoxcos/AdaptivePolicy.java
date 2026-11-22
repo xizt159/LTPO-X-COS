@@ -99,6 +99,7 @@ final class AdaptivePolicy {
                 @Override protected void afterHookedMethod(MethodHookParam p){
                     int limit=cap;
                     if(limit>0&&!ime&&VideoIdlePolicy.recentInteraction())limit=Config.effectiveRate();
+                    if(limit>0)limit=BatteryDisplayPolicy.limit(limit);
                     if(!Config.on("refresh") || !Hook.systemStandardMode() || !ready || limit==0 || !Integer.valueOf(0).equals(p.args[0])
                             || p.getThrowable()!=null || !(p.getResult() instanceof SparseArray))return;
                     // Only the captured director's storage; never another display/director.
@@ -266,6 +267,7 @@ final class AdaptivePolicy {
         if(!Config.refresh("ime")){IME.clear();ime=false;rawIme=false;}
         Idle144Policy.scene(pkg,pid,sceneFull,interactive&&!ime&&!rawIme&&!VideoIdlePolicy.playingVideo());
         int next=ready&&Config.on("refresh")&&Hook.systemStandardMode()?(interactive?Math.min(Config.effectiveRate(),ime||VideoIdlePolicy.watching()?60:Idle144Policy.active()?120:Config.effectiveRate()):0):0;
+        next=BatteryDisplayPolicy.limit(next);
         String policy=pkg+":"+Config.effectiveRate()+":"+Config.fixed()+":"+Config.explicitProfile()+":"+BatteryDisplayPolicy.capEnabled();
         boolean held=holdFixedRate();if(held!=nativeFixedHeld){nativeFixedHeld=held;NativeIdlePolicy.refresh();NativeReservePolicy.refresh();}
         if(next==cap&&policy.equals(appliedAppPolicy))return;appliedAppPolicy=policy;cap=next;policyChanges++;
