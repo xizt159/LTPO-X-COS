@@ -26,10 +26,10 @@ final class SettingsIntegration {
                 set(pref,"setEntries",new CharSequence[]{"60 Hz","90 Hz","120 Hz","144 Hz","165 Hz"});set(pref,"setEntryValues",new CharSequence[]{"60","90","120","144","165"});
                 MenuIndicator.apply(pref,c);set(pref,"setPersistent",false);set(pref,"setEnabled",true);set(pref,"setMenuShowEnabled",true);if(category!=null)set(category,"setVisible",true);
                 set(pref,"setValue",String.valueOf(Config.rate()));set(pref,"setAssignment",Config.rate()+" Hz");
-                boolean ar=c.getResources().getConfiguration().getLocales().get(0).getLanguage().equals("ar");set(pref,"setSummary",(ar?"التردد المختار: ":"Selected refresh rate: ")+Config.rate()+" Hz");
+                set(pref,"setSummary","Selected refresh rate: "+Config.rate()+" Hz");
                 Class<?> listener=Class.forName("androidx.preference.Preference$OnPreferenceChangeListener",false,cl);
                 Object proxy=Proxy.newProxyInstance(cl,new Class<?>[]{listener},(o,m,args)->{
-                    if(m.getName().equals("onPreferenceChange")){int rate=Config.validRate(Integer.parseInt(String.valueOf(args[1])));Bundle b=new Bundle();b.putInt("rate",rate);c.getContentResolver().call(Config.URI,"write",null,b);Config.previewRate(rate);set(pref,"setAssignment",rate+" Hz");set(pref,"setSummary",(ar?"التردد المختار: ":"Selected refresh rate: ")+rate+" Hz");return true;}
+                    if(m.getName().equals("onPreferenceChange")){int rate=Config.validRate(Integer.parseInt(String.valueOf(args[1])));Bundle b=new Bundle();b.putInt("rate",rate);c.getContentResolver().call(Config.URI,"write",null,b);Config.previewRate(rate);set(pref,"setAssignment",rate+" Hz");set(pref,"setSummary","Selected refresh rate: "+rate+" Hz");return true;}
                     if(m.getName().equals("hashCode"))return System.identityHashCode(o);if(m.getName().equals("equals"))return o==args[0];return "Native refresh selector";
                 });set(pref,"setOnPreferenceChangeListener",proxy);
             }catch(Throwable ignored){}

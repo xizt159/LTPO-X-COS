@@ -9,7 +9,8 @@ final class SystemVersion {
 
     private SystemVersion() {}
 
-    static String label(String oxygenOs, String oplusRom, String display, String androidRelease) {
+    static String label(String oxygenOs, String oplusRom, String display, String androidRelease,
+            String manufacturer) {
         String version = version(oxygenOs);
         if (version != null) return "OxygenOS " + version;
 
@@ -17,10 +18,27 @@ final class SystemVersion {
         if (named.find()) return capitalize(named.group(1)) + " " + named.group(2);
 
         version = version(oplusRom);
-        if (version != null) return "ColorOS " + version;
+        if (version != null) {
+            boolean labelOxygenOs = isOnePlus(manufacturer) && majorVersion(version) < 17;
+            return (labelOxygenOs ? "OxygenOS " : "ColorOS ") + version;
+        }
 
         return androidRelease == null || androidRelease.isEmpty()
                 ? "System version unavailable" : "Android " + androidRelease;
+    }
+
+    private static int majorVersion(String version) {
+        int separator = version.indexOf('.');
+        String major = separator < 0 ? version : version.substring(0, separator);
+        try {
+            return Integer.parseInt(major);
+        } catch (NumberFormatException ignored) {
+            return 0;
+        }
+    }
+
+    private static boolean isOnePlus(String manufacturer) {
+        return manufacturer != null && manufacturer.toLowerCase(java.util.Locale.ROOT).contains("oneplus");
     }
 
     private static String version(String value) {

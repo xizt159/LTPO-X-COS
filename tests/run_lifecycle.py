@@ -19,10 +19,15 @@ files['android/os/BatteryManager.java']='package android.os;public class Battery
 files['android/content/Context.java']=files['android/content/Context.java'].replace('RECEIVER_NOT_EXPORTED=4','RECEIVER_NOT_EXPORTED=4,RECEIVER_EXPORTED=2').replace('public Object registerReceiver(','public Intent registerReceiver(')
 files['android/content/IntentFilter.java']=files['android/content/IntentFilter.java'].replace('public class IntentFilter {','public class IntentFilter {public IntentFilter(){}public IntentFilter(String s){}')
 files['android/content/Intent.java']=files['android/content/Intent.java'].replace('public class Intent {','public class Intent {public int getIntExtra(String key,int fallback){return fallback;}public static final String ACTION_BATTERY_CHANGED="battery";')
+files['com/android/server/wm/OplusRefreshRateUtils.java']=files['com/android/server/wm/OplusRefreshRateUtils.java'].replace('case 7:return 165f;', 'case 7:return 165f;case 8:return 185f;')
+files['com/ltpoxcos/LifecycleTest.java']=files['com/ltpoxcos/LifecycleTest.java'].replace(
+ '  Handler h=new Handler();set("worker",h);',
+ '  Field ids=Hook.class.getDeclaredField("rateIds");ids.setAccessible(true);ids.set(null,java.util.Map.of(60,2,90,1,120,3,144,4,165,7,185,8));Field selected=Hook.class.getDeclaredField("selectedSettingMode");selected.setAccessible(true);selected.setInt(null,2);Handler h=new Handler();set("worker",h);')
 for name,text in files.items():
  f=src/name;f.parent.mkdir(parents=True,exist_ok=True);f.write_text(text,encoding='utf-8')
-actual=[repo/'module/src/com/ltpoxcos'/name for name in ['AppProfiles.java','Idle144Policy.java','RootFrame.java','AodAccess.java','AodTapSequence.java','AodTapPolicy.java','AodBackdropPolicy.java','PanoramicStatusPolicy.java','UiText.java','SystemVersion.java','ScopeRestart.java','AodPolicy.java','AodValues.java','AodLiftPolicy.java','NativeTables.java','AdfrVersion.java','VideoIdlePolicy.java','VideoFrameEvidence.java','NativeReservePolicy.java','AdaptivePolicy.java','AdaptiveState.java','ImeLatch.java','NativeIdlePolicy.java','AnimationPolicy.java','RateProfile.java','Hook.java','xp/IXposedHookLoadPackage.java','xp/callbacks/XC_LoadPackage.java']]
+actual=[repo/'module/src/com/ltpoxcos'/name for name in ['AppProfiles.java','Idle144Policy.java','RootFrame.java','AodAccess.java','AodTapSequence.java','AodTapPolicy.java','AodBackdropPolicy.java','PanoramicStatusPolicy.java','SystemVersion.java','ScopeRestart.java','AodPolicy.java','AodValues.java','AodLiftPolicy.java','NativeTables.java','AdfrVersion.java','VideoIdlePolicy.java','VideoFrameEvidence.java','NativeReservePolicy.java','AdaptivePolicy.java','AdaptiveState.java','ImeLatch.java','NativeIdlePolicy.java','AnimationPolicy.java','RateProfile.java','Hook.java','xp/IXposedHookLoadPackage.java','xp/callbacks/XC_LoadPackage.java']]
 actual.append(repo/"module/src/com/ltpoxcos/BatteryDisplayPolicy.java")
+actual.append(repo/"module/src/com/ltpoxcos/RefreshModePolicy.java")
 actual.append(repo/"tests/VideoPolicyTest.java")
 actual.append(repo/"tests/UnifiedTest.java")
 actual.append(repo/"tests/Exp2Test.java")

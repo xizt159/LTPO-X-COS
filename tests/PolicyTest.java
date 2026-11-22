@@ -13,6 +13,11 @@ public class PolicyTest {
   eq(-1,RateProfile.highRateId(id->id==8||id==9?165:0));
   eq(-1,RateProfile.highRateId(id->0));
   eq(-1,RateProfile.highRateId(id->{throw new IllegalArgumentException();}));
+  yes(RefreshModePolicy.shouldOverride(true,2,2));
+  yes(!RefreshModePolicy.shouldOverride(true,3,2));
+  yes(!RefreshModePolicy.shouldOverride(true,-1,2));
+  yes(!RefreshModePolicy.shouldOverride(true,2,-1));
+  yes(!RefreshModePolicy.shouldOverride(false,2,2));
   for(int mode:new int[]{165})for(int peak:new int[]{165}){
    int[] nativeTable={10,33,33,peak,33,peak,33,peak,33,peak,33,0,0};int[] saved=nativeTable.clone();
    int[] idle=RateProfile.reserveIdleTable(mode,nativeTable);yes(idle!=null&&idle!=nativeTable);yes(Arrays.equals(nativeTable,saved));

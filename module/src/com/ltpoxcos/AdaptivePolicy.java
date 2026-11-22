@@ -41,6 +41,7 @@ final class AdaptivePolicy {
         Scene(String p,int process,boolean shown){this(p,process,shown,false);}
         Scene(String p,int process,boolean shown,boolean fullscreen){pkg=p;pid=process;ime=shown;full=fullscreen;}
     }
+    static void systemModeChanged(){Handler h=worker;if(h!=null)h.post(AdaptivePolicy::recompute);}
     static void install(ClassLoader cl) {
         android.os.HandlerThread thread=new android.os.HandlerThread("LTPO-X-COSAdaptive");
         thread.start(); worker=new Handler(thread.getLooper()){
@@ -82,18 +83,24 @@ final class AdaptivePolicy {
                 @Override protected void afterHookedMethod(MethodHookParam p){
                     if(!Integer.valueOf(0).equals(p.args[0]) || p.getThrowable()!=null)return;
                     Object ranges=field(p.getResult(),"primary");
+                    if(cap>0&&Hook.systemStandardMode()){
+                        try{clampResolvedRanges(p.getResult(),cap);}
+                        catch(Throwable t){fault="resolved-cap-"+t.getClass().getSimpleName();}
+                    }
                     Object physical=field(field(ranges,"physical"),"max");
                     Object render=field(field(ranges,"render"),"max");
                     resolvedPhysicalMax=physical instanceof Number?((Number)physical).floatValue():-1f;
                     resolvedRenderMax=render instanceof Number?((Number)render).floatValue():-1f;
                     if(cap>0 && resolvedRenderMax>cap+0.1f)reason="ceiling-yielded-to-system-or-unsupported";
+                    else if(cap>0)reason="hard-ceiling-"+cap;
                 }
             });
             XC_MethodHook.Unhook b=XposedBridge.hookMethod(votes,new XC_MethodHook(){
                 @Override protected void afterHookedMethod(MethodHookParam p){
                     int limit=cap;
                     if(limit>0&&!ime&&VideoIdlePolicy.recentInteraction())limit=Config.effectiveRate();
-                    if(!Config.on("refresh") || !ready || limit==0 || !Integer.valueOf(0).equals(p.args[0])
+                    if(limit>0)limit=BatteryDisplayPolicy.limit(limit);
+                    if(!Config.on("refresh") || !Hook.systemStandardMode() || !ready || limit==0 || !Integer.valueOf(0).equals(p.args[0])
                             || p.getThrowable()!=null || !(p.getResult() instanceof SparseArray))return;
                     // Only the captured director's storage; never another display/director.
                     if(p.thisObject!=field(director,"mVotesStorage"))return;
@@ -183,7 +190,7 @@ final class AdaptivePolicy {
     private static void initialize(){
         if(context==null||powerRegistered)return;
         ready=voteHook&&(sceneHook||focusHook);
-        Config.listen(()->worker.post(()->{Hook.configurationChanged(context);NativeIdlePolicy.refresh();NativeReservePolicy.refresh();AnimationPolicy.refresh();cap=-1;recompute();}));
+        Config.listen(()->worker.post(()->{        Hook.configurationChanged();NativeIdlePolicy.refresh();NativeReservePolicy.refresh();AnimationPolicy.refresh();cap=-1;recompute();}));
         Config.init(context);
         Idle144Policy.start(worker,AdaptivePolicy::recompute);
         VideoIdlePolicy.start(context,worker,AdaptivePolicy::recompute);
@@ -223,11 +230,44 @@ final class AdaptivePolicy {
         all.add(physicalVote.invoke(null,0f,physical+0.01f));all.add(renderVote.invoke(null,0f,render+0.01f));
         copy.put(slot,combined.newInstance(all));
     }
+    static void clampResolvedRanges(Object specs,float ceiling)throws Exception{
+        clampRangePair(field(specs,"primary"),ceiling);
+        Object appRequest=field(specs,"appRequest");
+        if(appRequest!=null)clampRangePair(appRequest,ceiling);
+    }
+    private static void clampRangePair(Object ranges,float ceiling)throws Exception{
+        if(ranges==null)throw new IllegalStateException("refresh-ranges-unavailable");
+        boolean physical=clampRangeMax(field(ranges,"physical"),ceiling);
+        boolean render=clampRangeMax(field(ranges,"render"),ceiling);
+        if(!physical||!render)throw new IllegalStateException("refresh-ranges-unavailable");
+    }
+    private static boolean clampRangeMax(Object range,float ceiling)throws Exception{
+        if(range==null)return false;
+        Field max=null;
+        for(Class<?> c=range.getClass();c!=null&&max==null;c=c.getSuperclass()){
+            try{max=c.getDeclaredField("max");}
+            catch(NoSuchFieldException ignored){}
+        }
+        if(max==null)return false;
+        max.setAccessible(true);
+        Object value=max.get(range);
+        if(!(value instanceof Number))throw new IllegalStateException("refresh-range-max-type");
+        float current=((Number)value).floatValue();
+        if(current>ceiling){
+            if(max.getType()==float.class)max.setFloat(range,ceiling);
+            else if(max.getType()==Float.class)max.set(range,Float.valueOf(ceiling));
+            else if(max.getType()==double.class)max.setDouble(range,ceiling);
+            else if(max.getType()==Double.class)max.set(range,Double.valueOf(ceiling));
+            else throw new IllegalStateException("refresh-range-max-type");
+        }
+        return true;
+    }
     private static void recompute(){
         VideoIdlePolicy.scene(pkg,pid,sceneFull,interactive&&!ime&&!rawIme);
         if(!Config.refresh("ime")){IME.clear();ime=false;rawIme=false;}
         Idle144Policy.scene(pkg,pid,sceneFull,interactive&&!ime&&!rawIme&&!VideoIdlePolicy.playingVideo());
-        int next=ready&&Config.on("refresh")?(interactive?Math.min(Config.effectiveRate(),ime||VideoIdlePolicy.watching()?60:Idle144Policy.active()?120:Config.effectiveRate()):0):0;
+        int next=ready&&Config.on("refresh")&&Hook.systemStandardMode()?(interactive?Math.min(Config.effectiveRate(),ime||VideoIdlePolicy.watching()?60:Idle144Policy.active()?120:Config.effectiveRate()):0):0;
+        next=BatteryDisplayPolicy.limit(next);
         String policy=pkg+":"+Config.effectiveRate()+":"+Config.fixed()+":"+Config.explicitProfile()+":"+BatteryDisplayPolicy.capEnabled();
         boolean held=holdFixedRate();if(held!=nativeFixedHeld){nativeFixedHeld=held;NativeIdlePolicy.refresh();NativeReservePolicy.refresh();}
         if(next==cap&&policy.equals(appliedAppPolicy))return;appliedAppPolicy=policy;cap=next;policyChanges++;
@@ -244,7 +284,7 @@ final class AdaptivePolicy {
         PowerManager pm=context==null?null:(PowerManager)context.getSystemService(Context.POWER_SERVICE);
         return pm!=null&&pm.isPowerSaveMode();
     }
-    static boolean holdFixedRate(){return ready&&interactive&&Config.fixed()&&!activeRequest();}
+    static boolean holdFixedRate(){return ready&&interactive&&Hook.systemStandardMode()&&Config.fixed()&&!activeRequest();}
     static boolean activeRequest(){return interactive&&(ime||VideoIdlePolicy.watching()||Idle144Policy.active());}
     static boolean coldAndUnrestricted(){
         try{

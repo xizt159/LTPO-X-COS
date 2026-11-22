@@ -25,20 +25,15 @@ public final class Hook implements IXposedHookLoadPackage {
     static int highRateId(){
         return rateId(Config.effectiveRate());
     }
-    static int rateId(int rate){Integer id=rateIds.get(rate);return id==null?highRateId:id;
+    static int rateId(int rate){Integer id=rateIds.get(rate);return id==null?highRateId:id;}
+    static boolean systemStandardMode(){
+        Integer standard=rateIds.get(60);
+        return RefreshModePolicy.shouldOverride(Config.on("refresh"),selectedSettingMode,
+                standard==null?-1:standard);
     }
-    private static int appliedRate=-1;
     private static volatile Object lastDc;
     private static volatile int lastDcRequested=-1;
-    static void configurationChanged(Context context){
-        int rate=Config.rate();
-        if(Config.on("refresh")&&context!=null&&rate!=appliedRate)try{
-            int id=rateId(Config.rate());if(id>0){
-                android.provider.Settings.Secure.putInt(context.getContentResolver(),"oplus_customize_screen_refresh_rate",id);
-                android.provider.Settings.Secure.putInt(context.getContentResolver(),"choice_mode_rate",rate);
-                appliedRate=rate;
-            }
-        }catch(Throwable ignored){}
+    static void configurationChanged(){
         Object dc=lastDc;int nativeLimit=lastDcRequested;
         if(dc!=null&&nativeLimit>=0)try{XposedHelpers.callMethod(dc,"setLimitMaxRefreshRateId",nativeLimit);}catch(Throwable ignored){}
         refreshVideoPolicy();
@@ -74,7 +69,7 @@ public final class Hook implements IXposedHookLoadPackage {
         android.util.Log.i("LTPO-X-COS", "load pkg=" + lp.packageName);
         if ("com.android.settings".equals(lp.packageName)) {
             Config.bootstrap(lp.classLoader);
-            SettingsIntegration.install(lp.classLoader);SupportedAppsIntegration.install(lp.classLoader);
+            SupportedAppsIntegration.install(lp.classLoader);
             return;
         }
         if (!SYSTEM_PACKAGE.equals(lp.packageName) && !"system".equals(lp.packageName)) {
@@ -105,7 +100,7 @@ public final class Hook implements IXposedHookLoadPackage {
             Class<?> utils = XposedHelpers.findClass("com.android.server.wm.OplusRefreshRateUtils", cl);
             rateUtils=utils;
             java.util.Map<Integer,Integer> map=new java.util.HashMap<>();
-            for(int id=1;id<=16;id++)try{Object n=XposedHelpers.callStaticMethod(utils,"getRefreshRateById",id);if(n instanceof Number){float hz=((Number)n).floatValue();for(int rate:new int[]{60,90,120,144,165})if(Math.abs(hz-rate)<0.1f&&!map.containsKey(rate))map.put(rate,id);}}catch(Throwable ignored){}
+            for(int id=1;id<=16;id++)try{Object n=XposedHelpers.callStaticMethod(utils,"getRefreshRateById",id);if(n instanceof Number){float hz=((Number)n).floatValue();for(int rate:new int[]{60,90,120,144,165,185})if(Math.abs(hz-rate)<0.1f&&!map.containsKey(rate))map.put(rate,id);}}catch(Throwable ignored){}
             rateIds=java.util.Collections.unmodifiableMap(map);
             int[] ids = {1, 2, 3};
             float[] rates = {90f, 60f, 120f};
@@ -195,7 +190,8 @@ public final class Hook implements IXposedHookLoadPackage {
     }
 
     private static boolean unlockSetting(int mode) {
-        return Config.on("refresh")&&(mode==0||mode==highRateId()||mode==7||mode==4||mode==3||mode==2||mode==1); // legacy extreme setting now resolves to165
+        Integer standard=rateIds.get(60);
+        return RefreshModePolicy.shouldOverride(Config.on("refresh"),mode,standard==null?-1:standard);
     }
 
     private static void hookDefaultWindowRate(ClassLoader cl) {
@@ -211,6 +207,11 @@ public final class Hook implements IXposedHookLoadPackage {
                                 return;
                             }
                             if(!Config.on("refresh"))return;
+                            Object observer = field(p.thisObject, "mSettingsObserver");
+                            Object modeValue = field(observer, "mCurrentPickMode");
+                            int mode = modeValue instanceof Number
+                                    ? ((Number) modeValue).intValue() : selectedSettingMode;
+                            if(!unlockSetting(mode))return;
                             int picked = ((Number) p.args[0]).intValue();
                             if(Idle144Policy.owner(candidatePackage(field(p.thisObject,"mPickRefreshRateData")))&&(picked==4||picked==3||picked==7)){p.args[0]=3;return;}
                             videoPolicy=p.thisObject;
@@ -222,16 +223,12 @@ public final class Hook implements IXposedHookLoadPackage {
                             }
 
                             // Skip reflection entirely for non-120 candidates or other settings.
-                            Object observer = field(p.thisObject, "mSettingsObserver");
-                            Object modeValue = field(observer, "mCurrentPickMode");
-                            int mode = modeValue instanceof Number
-                                    ? ((Number) modeValue).intValue() : selectedSettingMode;
                             Object selectedPicker=field(p.thisObject,"mPickRefreshRateData");
                             String selectedPkg=candidatePackage(selectedPicker);
                             AppProfiles.Rule appRule=Config.profile(selectedPkg);
                             if(appRule!=null){if(!Config.foregroundOwner(selectedPkg))return;if(appRule.explicit()&&(picked==1||picked==2||picked==3||picked==4||picked==7))p.args[0]=rateId(Config.profileRate(selectedPkg));return;}
                             if(Config.app(selectedPkg)&&candidateWindowRequestRate(selectedPicker)==0){p.args[0]=highRateId();return;}
-                            if (picked != 3 || !unlockSetting(mode)) {
+                            if (picked != 3) {
                                 return;
                             }
                             Object picker = field(p.thisObject, "mPickRefreshRateData");
@@ -315,7 +312,9 @@ public final class Hook implements IXposedHookLoadPackage {
                                 return;
                             }
                             int requested = ((Number) p.args[0]).intValue();
+                            boolean changed=selectedSettingMode!=requested;
                             selectedSettingMode = requested;
+                            if(changed)AdaptivePolicy.systemModeChanged();
                             if (!Config.on("refresh") || !unlockSetting(requested)) {
                                 return;
                             }
