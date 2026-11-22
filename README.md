@@ -79,7 +79,7 @@ Include the device model, complete firmware version, module/runtime versions, en
 
 ## Credits and license
 
-- **MaZaGnGy** — previous maintainer; credited for the project's earlier work.
+- [MaZaGnGy](https://github.com/MaZaGnGy/Screen-Tuner) — previous maintainer; credited for the project's earlier work.
 - [Refresh165 / wanwei1028](https://github.com/wanwei1028/Refresh165) — original project foundation. The original MIT notice is retained in [LICENSE](LICENSE).
 - [Force165hz / tryptz](https://github.com/tryptz/Force165hz-Oneplus-15-NoRoot) — refresh-rate implementation reference.
 - **FreshShift** and **ColorOS AOD** — references for display, Settings, and AOD integration.
