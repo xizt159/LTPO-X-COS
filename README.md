@@ -24,20 +24,20 @@ runtime requirement or turn these Java hooks into kernel-level hooks.
 
 ## Display and brightness
 
-| Feature | Behavior |
-| --- | --- |
-| Display master switch | Enables display modifications independently of AOD. |
-| Maximum refresh rate | Select **60 / 90 / 120 / 144 / 165Hz**, plus **185Hz** when reported as supported by the device. This is the ordinary interaction ceiling; LTPO remains free to lower the rate while idle. Select **Standard (60Hz)** in system display settings to enable the module ceiling. Custom system refresh modes are never overridden. |
-| Battery Saver cap | Optional **60Hz** maximum while Android Battery Saver is active. LTPO's native adaptive idle remains enabled. |
-| Low-brightness idle | Adjusts recognized eligibility conditions to permit deeper idle where supported, while retaining DC eligibility. |
-| 1Hz idle tables | Changes recognized 60/90/120/165Hz idle tables; unknown schemas are preserved. A table change is not a guarantee of 1Hz in every scene. |
-| Faster adaptive idle | Shortens recognized default delays to 600ms/200ms; application-specific timings are preserved. No fixed sequence of refresh rates is forced. |
-| Selected-rate animations | Adjusts supported launcher and transition requests to the selected maximum rate, retaining thermal and relevant fingerprint restrictions. |
-| Keyboard cap | Applies a temporary **60Hz ceiling after 300ms** of keyboard visibility, allowing the entrance animation to finish first. The previous policy resumes after dismissal. |
-| Passive video policy | Uses a **60Hz ceiling with native 30Hz behavior where applicable**, only after supported playback is detected and input/content settle. Google Photos can be detected from advancing video-surface evidence even without a media session. Interaction restores the selected ceiling. Supported fullscreen and inline playback are handled without permanently capping the whole app. **120Hz is not selected for video.** |
-| Disable LTPO | Holds the selected maximum during ordinary use. Temporary keyboard/video limits and thermal constraints still apply. |
-| Experimental 144Hz fallback | Optionally requests the real 120Hz timing during verified idle, then returns to 144Hz on interaction. **144Hz-to-1Hz remains unresolved.** |
-| Show refresh rate | Toggles Android's green refresh-rate indicator in the top-left corner. Changing the developer option requires granting root access when prompted. |
+| Feature                     | Behavior                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Display master switch       | Enables display modifications independently of AOD.                                                                                                                                                                                                                                                                                                                                                                       |
+| Maximum refresh rate        | Select **60 / 90 / 120 / 144 / 165Hz**, plus **185Hz** when reported as supported by the device. This is the ordinary interaction ceiling; LTPO remains free to lower the rate while idle. Select **Standard (60Hz)** in system display settings to enable the module ceiling. Custom system refresh modes are never overridden.                                                                                          |
+| Battery Saver cap           | Optional **60Hz** maximum while Android Battery Saver is active. LTPO's native adaptive idle remains enabled.                                                                                                                                                                                                                                                                                                             |
+| Low-brightness idle         | Adjusts recognized eligibility conditions to permit deeper idle where supported, while retaining DC eligibility.                                                                                                                                                                                                                                                                                                          |
+| 1Hz idle tables             | Changes recognized 60/90/120/165Hz idle tables; unknown schemas are preserved. A table change is not a guarantee of 1Hz in every scene.                                                                                                                                                                                                                                                                                   |
+| Faster adaptive idle        | Shortens recognized default delays to 600ms/200ms; application-specific timings are preserved. No fixed sequence of refresh rates is forced.                                                                                                                                                                                                                                                                              |
+| Selected-rate animations    | Adjusts supported launcher and transition requests to the selected maximum rate, retaining thermal and relevant fingerprint restrictions.                                                                                                                                                                                                                                                                                 |
+| Keyboard cap                | Applies a temporary **60Hz ceiling after 300ms** of keyboard visibility, allowing the entrance animation to finish first. The previous policy resumes after dismissal.                                                                                                                                                                                                                                                    |
+| Passive video policy        | Uses a **60Hz ceiling with native 30Hz behavior where applicable**, only after supported playback is detected and input/content settle. Google Photos can be detected from advancing video-surface evidence even without a media session. Interaction restores the selected ceiling. Supported fullscreen and inline playback are handled without permanently capping the whole app. **120Hz is not selected for video.** |
+| Disable LTPO                | Holds the selected maximum during ordinary use. Temporary keyboard/video limits and thermal constraints still apply.                                                                                                                                                                                                                                                                                                      |
+| Experimental 144Hz fallback | Optionally requests the real 120Hz timing during verified idle, then returns to 144Hz on interaction. **144Hz-to-1Hz remains unresolved.**                                                                                                                                                                                                                                                                                |
+| Show refresh rate           | Toggles Android's green refresh-rate indicator in the top-left corner. Changing the developer option requires granting root access when prompted.                                                                                                                                                                                                                                                                         |
 
 Thermal protection remains effective. A requested fixed rate may yield to higher-priority system restrictions or unsupported mode combinations.
 
@@ -47,12 +47,12 @@ Open **Settings → Display & brightness → Screen refresh rate → Supported a
 
 The native on/off switch is replaced by a policy selector. The same controls work in the normal list and search results.
 
-| Policy | Meaning |
-| --- | --- |
-| Fixed 165 / 144 / 120 / 90 / 60Hz | Requests the chosen rate during ordinary app use and disables touch-idle through a private outgoing configuration copy while the fixed policy is held. |
-| Variable 165 / 144 / 120 / 90 / 60Hz | Selects an interaction ceiling while allowing native adaptive idle. It takes precedence over the global LTPO-disable switch for that app. |
-| Follow current | Dynamically follows the global selected refresh rate, with adaptive idle. Later changes to the global rate are followed automatically. |
-| System default | Removes the app-specific enforcement. General module settings still apply. |
+| Policy                               | Meaning                                                                                                                                                |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Fixed 165 / 144 / 120 / 90 / 60Hz    | Requests the chosen rate during ordinary app use and disables touch-idle through a private outgoing configuration copy while the fixed policy is held. |
+| Variable 165 / 144 / 120 / 90 / 60Hz | Selects an interaction ceiling while allowing native adaptive idle. It takes precedence over the global LTPO-disable switch for that app.              |
+| Follow current                       | Dynamically follows the global selected refresh rate, with adaptive idle. Later changes to the global rate are followed automatically.                 |
+| System default                       | Removes the app-specific enforcement. General module settings still apply.                                                                             |
 
 **The three-dot menu adds:**
 
@@ -67,20 +67,20 @@ Choosing a policy enables the per-app policy master switch. Disabling that maste
 
 AOD has a separate master switch and individual feature switches.
 
-| Feature | Behavior |
-| --- | --- |
-| Full-screen/Panoramic AOD | Exposes support through compatible native paths. |
-| All-day option | Exposes supported panoramic all-day settings. |
-| Panoramic status bar | Hides the native panoramic keyguard status bar. |
-| Hide wallpaper | Keeps the Full-screen design with a black backdrop similar to Partial AOD, across the available display modes. The regular lock-screen wallpaper returns on wake. |
-| Two-stage tap gesture | **Two taps reveal AOD; one separate subsequent tap wakes the lock screen.** It does not dismiss authentication. |
-| Dark-environment visibility | Prevents the supported native dark-light rule from hiding AOD. |
-| Initial brightness in darkness | Separate switch and value for the initial dark-environment brightness. |
-| Initial brightness in light | Separate switch and value for initial brightness in brighter environments. |
-| Running brightness | Applies a configurable **25–300% multiplier** to supported normalized AOD brightness requests. |
-| Block lift-to-show | Prevents tilt/motion from revealing AOD while retaining tap gestures. Turning it off restores native behavior; it does not force a system-disabled lift feature on. |
-| Fixed AOD brightness | Choose a relative level from **2–255**. Takes precedence over initial brightness and the multiplier. Turning it off restores previous settings. Values are not nits; screen-off/invalid requests retain native meaning. |
-| Battery percentage only | Displays the percentage instead of the full status bar during AOD. The normal lock-screen/status-bar presentation returns on wake. |
+| Feature                        | Behavior                                                                                                                                                                                                                |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Full-screen/Panoramic AOD      | Exposes support through compatible native paths.                                                                                                                                                                        |
+| All-day option                 | Exposes supported panoramic all-day settings.                                                                                                                                                                           |
+| Panoramic status bar           | Hides the native panoramic keyguard status bar.                                                                                                                                                                         |
+| Hide wallpaper                 | Keeps the Full-screen design with a black backdrop similar to Partial AOD, across the available display modes. The regular lock-screen wallpaper returns on wake.                                                       |
+| Two-stage tap gesture          | **Two taps reveal AOD; one separate subsequent tap wakes the lock screen.** It does not dismiss authentication.                                                                                                         |
+| Dark-environment visibility    | Prevents the supported native dark-light rule from hiding AOD.                                                                                                                                                          |
+| Initial brightness in darkness | Separate switch and value for the initial dark-environment brightness.                                                                                                                                                  |
+| Initial brightness in light    | Separate switch and value for initial brightness in brighter environments.                                                                                                                                              |
+| Running brightness             | Applies a configurable **25–300% multiplier** to supported normalized AOD brightness requests.                                                                                                                          |
+| Block lift-to-show             | Prevents tilt/motion from revealing AOD while retaining tap gestures. Turning it off restores native behavior; it does not force a system-disabled lift feature on.                                                     |
+| Fixed AOD brightness           | Choose a relative level from **2–255**. Takes precedence over initial brightness and the multiplier. Turning it off restores previous settings. Values are not nits; screen-off/invalid requests retain native meaning. |
+| Battery percentage only        | Displays the percentage instead of the full status bar during AOD. The normal lock-screen/status-bar presentation returns on wake.                                                                                      |
 
 Block lift-to-show, fixed AOD brightness and battery-only AOD are off by default. Availability depends on the native AOD implementation and selected mode.
 
@@ -116,14 +116,14 @@ See [CHANGELOG.md](CHANGELOG.md) for earlier builds.
 
 ## Validation and known limitations
 
-| Area | Status |
-| --- | --- |
-| 165 / 120 / 90Hz low-brightness idle | 1Hz reported working on the development device in the established unified builds. |
-| 144Hz → 1Hz | **Unresolved.** Experimental 120Hz idle fallback is not a confirmed fix. |
-| 60Hz profile | Selectable; low-brightness 1Hz at this profile has not been confirmed. |
-| Keyboard and established video/AOD features | Earlier unified behavior was user-tested; newer additions have separate validation limits. |
-| exp4 additions | Lift toggle, fixed AOD brightness and battery-only display were host-tested; physical-device confirmation remains pending in the recorded results. |
-| Beta 1 per-app policies | **757 host-side assertions passed.** The current native Settings APK and its 99-app page/overflow menu were reviewed on the development device. The development-device user confirmed the per-app policy works across all available fixed/variable choices. System telemetry independently recorded Variable120Hz on the Gallery app while the global rate was165Hz. |
+| Area                                        | Status                                                                                                                                                                                                                                                                                                                                                               |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 165 / 120 / 90Hz low-brightness idle        | 1Hz reported working on the development device in the established unified builds.                                                                                                                                                                                                                                                                                    |
+| 144Hz → 1Hz                                 | **Unresolved.** Experimental 120Hz idle fallback is not a confirmed fix.                                                                                                                                                                                                                                                                                             |
+| 60Hz profile                                | Selectable; low-brightness 1Hz at this profile has not been confirmed.                                                                                                                                                                                                                                                                                               |
+| Keyboard and established video/AOD features | Earlier unified behavior was user-tested; newer additions have separate validation limits.                                                                                                                                                                                                                                                                           |
+| exp4 additions                              | Lift toggle, fixed AOD brightness and battery-only display were host-tested; physical-device confirmation remains pending in the recorded results.                                                                                                                                                                                                                   |
+| Beta 1 per-app policies                     | **757 host-side assertions passed.** The current native Settings APK and its 99-app page/overflow menu were reviewed on the development device. The development-device user confirmed the per-app policy works across all available fixed/variable choices. System telemetry independently recorded Variable120Hz on the Gallery app while the global rate was165Hz. |
 
 1Hz requires suitable static content and native operating conditions; it is not guaranteed during scrolling, animations, playback or every application. Video detection requires supported playback/content evidence; Google Photos without a media session additionally requires a detectable advancing video surface. External PiP and multiwindow are excluded from the passive-video override. A rendering FPS overlay may differ from the physical panel's refresh behavior.
 

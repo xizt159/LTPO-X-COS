@@ -40,6 +40,7 @@ public final class UnifiedTest {
         Config.flags.put("low_light",false);yes(NativeIdlePolicy.eligible(m,true).equals("disabled-by-user"));Config.flags.clear();
         Method discover=Hook.class.getDeclaredMethod("hasExpectedRateMap",ClassLoader.class);discover.setAccessible(true);yes((Boolean)discover.invoke(null,UnifiedTest.class.getClassLoader()));
         for(int[] pair:new int[][]{{60,2},{90,1},{120,3},{144,4},{165,7}}){Config.hz=pair[0];yes(Hook.highRateId()==pair[1]);}Config.hz=165;
+        setStatic(Hook.class,"selectedSettingMode",2);yes(Hook.systemStandardMode());setStatic(Hook.class,"selectedSettingMode",7);yes(!Hook.systemStandardMode());setStatic(Hook.class,"selectedSettingMode",2);
         AodPolicy.install(UnifiedTest.class.getClassLoader(),"com.android.systemui");AodPolicy.install(UnifiedTest.class.getClassLoader(),"com.oplus.aod");
         Object smooth=instance("com.oplus.systemui.aod.display.SmoothTransitionController");call(smooth,"initSmoothTransitionState",new Class<?>[0]);yes(!(Boolean)field(smooth,"isSupportPanoramic"));
         Config.flags.put("aod",true);call(smooth,"initSmoothTransitionState",new Class<?>[0]);yes((Boolean)field(smooth,"isSupportPanoramic"));yes((Boolean)field(smooth,"isSupportPanoramicAllDay"));
