@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.0.0-beta.5 — Beta 5 — 2026-11-22
+
+### Changed
+
+- Apply LTPO-X refresh-rate overrides only when the system display mode is explicitly **Standard (60 Hz)**; leave Auto and custom modes untouched.
+- Simplified the maximum refresh-rate control and kept the optional 60 Hz Battery Saver cap separate.
+- Enforce the selected ceiling in both display ranges and refresh-rate votes, including while Battery Saver is active.
+- Offer 185 Hz when supported by the device and streamline the interface to English.
+
+### Release
+
+- Increased `versionCode` to `20010`.
+- The release must be signed with the same key as existing installations to install as an update.
+
 ## v1.0.0-beta.4 — Beta 4 — 2026-11-10
 
 ### Changed

@@ -2,7 +2,7 @@
 
 Adaptive refresh-rate policies and Always-On Display controls for compatible OnePlus and OPPO devices running OxygenOS or ColorOS.
 
-**Current release:** `1.0.0-beta.4` · **Package:** `com.ltpoxcos`
+**Current release:** `1.0.0-beta.5` · **Package:** `com.ltpoxcos`
 
 [Download APK](https://github.com/xizt159/LTPO-X-COS/releases/latest) · [Releases](https://github.com/xizt159/LTPO-X-COS/releases) · [Changelog](CHANGELOG.md)
 

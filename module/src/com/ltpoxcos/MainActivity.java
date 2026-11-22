@@ -22,7 +22,7 @@ public final class MainActivity extends Activity {
         super.onResume();
         syncRefreshRateOverlayState();
     }
-    private String version(){try{return getPackageManager().getPackageInfo(getPackageName(),0).versionName;}catch(Exception e){return "1.0.0-beta.4";}}
+    private String version(){try{return getPackageManager().getPackageInfo(getPackageName(),0).versionName;}catch(Exception e){return "1.0.0-beta.5";}}
     private String systemVersion(){
         return SystemVersion.label(systemProperty("ro.oxygenos.version","ro.oxygen.version"),
                 systemProperty("ro.build.version.oplusrom"),Build.DISPLAY+" "+systemProperty("ro.build.version.ota"),
