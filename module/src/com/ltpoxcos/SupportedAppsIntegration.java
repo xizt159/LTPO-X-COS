@@ -24,7 +24,7 @@ final class SupportedAppsIntegration {
   }catch(Throwable ignored){}
   Config.listen(()->MAIN.post(SupportedAppsIntegration::refresh));
  }
- private static boolean enabled(){return Config.refresh("menu");}
+ private static boolean enabled(){return Config.refresh("app_policies");}
  static List<String> packages(Object fragment){TreeSet<String> ids=new TreeSet<>();Object value=XposedHelpers.callMethod(fragment,"getPreferencesList");if(value instanceof List)for(Object pref:(List<?>)value){String pkg=packageName(pref);if(AppProfiles.packageName(pkg))ids.add(pkg);}return new ArrayList<>(ids);}
  private static String packageName(Object pref){try{return String.valueOf(XposedHelpers.callMethod(pref,"getPackageName"));}catch(Throwable ignored){return "";}}
  private static void bind(Object pref,View row,Object toggle,Object value){
