@@ -36,7 +36,7 @@ final class Config {
     static void previewProfiles(Bundle next){profiles=Collections.unmodifiableMap(AppProfiles.parse(next.getString("app_profiles","")));values=new Bundle(next);}
     static int rate(){return validRate(values.getInt("rate",165));}
     static void previewRate(int rate){Bundle next=new Bundle(values);next.putInt("rate",validRate(rate));values=next;}
-    static int validRate(int n){return n==60||n==90||n==120||n==144||n==165?n:165;}
+    static int validRate(int n){return n==60||n==90||n==120||n==144||n==165||n==185?n:165;}
     static int number(String key,int def,int min,int max){return Math.max(min,Math.min(max,values.getInt(key,def)));}
     static boolean app(String pkg){return refresh("app_policies")&&on("bulk_apps")&&Arrays.asList(values.getString("apps","").split(";")).contains(pkg);}
     static synchronized void listen(Runnable r){listeners.add(r);}

@@ -46,9 +46,9 @@ public final class MainActivity extends Activity {
 
     private int tab=0,bg,card,ink,muted,accent=0xff56c8d7;
     private Bundle state;private LinearLayout root,body;private ScrollView contentScroll;
-    private final String[] rates={"60 Hz","90 Hz","120 Hz","144 Hz","165 Hz"};
-    private final int[] hz={60,90,120,144,165};
-    @Override public void onCreate(Bundle b){super.onCreate(b);if(b!=null)tab=b.getInt("tab");render();}
+    private String[] rates={"60 Hz","90 Hz","120 Hz","144 Hz","165 Hz"};
+    private int[] hz={60,90,120,144,165};
+    @Override public void onCreate(Bundle b){super.onCreate(b);if(b!=null)tab=b.getInt("tab");detectRefreshRates();render();}
     @Override protected void onSaveInstanceState(Bundle b){super.onSaveInstanceState(b);b.putInt("tab",tab);}
     private int dp(float n){return (int)(n*getResources().getDisplayMetrics().density+0.5f);}
     private void load(){state=getContentResolver().call(Config.URI,"read",null,null);if(state==null)state=new Bundle();}
@@ -91,18 +91,15 @@ public final class MainActivity extends Activity {
     private void display(){
         LinearLayout l=group("DISPLAY & BRIGHTNESS");
         toggle(l,"refresh","Enable display adjustments","Independent of AOD features",null);
-        action(l,"Interaction rate: "+state.getInt("rate",165)+" Hz","Ceiling for interaction and animations; idle remains adaptive",()->{
-            int selected=Arrays.binarySearch(hz,state.getInt("rate",165));new AlertDialog.Builder(this).setTitle("Display refresh rate").setSingleChoiceItems(rates,Math.max(0,selected),(d,n)->{Bundle b=new Bundle();b.putInt("rate",hz[n]);write(b);d.dismiss();renderPreservingScroll();}).setNegativeButton("Cancel",null).show();
+        action(l,"Maximum refresh rate: "+state.getInt("rate",165)+" Hz","Caps interaction and animation rates while preserving adaptive LTPO idle.",()->{
+            int selected=Arrays.binarySearch(hz,state.getInt("rate",165));new AlertDialog.Builder(this).setTitle("Maximum refresh rate").setSingleChoiceItems(rates,Math.max(0,selected),(d,n)->{Bundle b=new Bundle();b.putInt("rate",hz[n]);write(b);d.dismiss();renderPreservingScroll();}).setNegativeButton("Cancel",null).show();
         });
-        toggle(l,"menu","All refresh rates in system settings","Use the original system menu with 60 / 90 / 120 / 144 / 165 Hz","refresh");
+        info(l,"For LTPO-X control, first select Standard (60 Hz) in the system's display settings. Custom system refresh modes are left unchanged. Idle minimum: 1 Hz at 60 / 90 / 120 / 144 Hz; 165 Hz is firmware-dependent (about 33–55 Hz).");
         toggle(l,"disable_ltpo","Disable LTPO during interaction","Hold the selected rate; video, keyboard and thermal ceilings still apply","refresh");
         toggle(l,"app_policies","Enable per-app refresh policies","Choose fixed or variable per app in the native Supported apps page","refresh");
         action(l,"Supported apps","Display settings → Refresh rate → Supported apps",()->{try{startActivity(new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS));}catch(Exception ignored){}});
-        l=group("Refresh-rate caps");
-        toggle(l,"refresh_cap","Enable general refresh-rate cap","Always applies, independently of Battery Saver.","refresh");
-        chooseInt(l,"refresh_cap_rate","General cap: ",120,hz," Hz","Maximum ordinary refresh rate; native adaptive behavior remains enabled.");
-        toggle(l,"battery_saver_cap","Battery Saver refresh-rate cap","Applies only while Android Battery Saver is enabled.","refresh");
-        chooseInt(l,"battery_rate","Battery Saver cap: ",120,hz," Hz","Separate ceiling used while Battery Saver is active.");
+        l=group("Battery Saver");
+        toggle(l,"battery_saver_cap","Cap refresh rate on Battery Saver","Limits the maximum to 60 Hz while Android Battery Saver is active; LTPO idle remains adaptive.","refresh");
         l=group("LTPO and interaction");
         toggle(l,"low_light","Allow idle at low brightness","Retain DC eligibility and the guarded native idle path","refresh");
         toggle(l,"tables","1 Hz idle tables","Adapt known 60 / 90 / 120 / 165 Hz tables; hardware confirmation is required","refresh");
@@ -143,15 +140,14 @@ public final class MainActivity extends Activity {
         SeekBar bar=new SeekBar(this);bar.setMax(max-min);bar.setProgress(state.getInt(key,def)-min);bar.setContentDescription(title);bar.setEnabled(on("aod"));group.addView(bar,new LinearLayout.LayoutParams(-1,dp(45)));
         bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onStartTrackingTouch(SeekBar b){}public void onProgressChanged(SeekBar b,int n,boolean user){value.setText(title+": "+(n+min)+suffix);}public void onStopTrackingTouch(SeekBar b){Bundle next=new Bundle();next.putInt(key,b.getProgress()+min);write(next);}});
     }
-    private void chooseInt(LinearLayout group,String key,String title,int def,int[] options,String suffix,String summary){
-        int current=state.getInt(key,def);
-        action(group,title+current+suffix,summary,()->{
-            String[] choices=new String[options.length];int selected=0;
-            for(int i=0;i<options.length;i++){choices[i]=options[i]+suffix;if(options[i]==current)selected=i;}
-            new AlertDialog.Builder(this).setTitle(title).setSingleChoiceItems(choices,selected,(dialog,index)->{
-                Bundle next=new Bundle();next.putInt(key,options[index]);write(next);dialog.dismiss();renderPreservingScroll();
-            }).setNegativeButton("Cancel",null).show();
-        });
+    private void detectRefreshRates(){
+        TreeSet<Integer> available=new TreeSet<>(Arrays.asList(60,90,120,144,165));
+        for(android.view.Display.Mode mode:getWindowManager().getDefaultDisplay().getSupportedModes()){
+            float refresh=mode.getRefreshRate();
+            if(Math.abs(refresh-185f)<0.5f)available.add(185);
+        }
+        hz=new int[available.size()];rates=new String[available.size()];
+        int index=0;for(int rate:available){hz[index]=rate;rates[index]=rate+" Hz";index++;}
     }
     private void footer(){
         LinearLayout l=group("Activation");

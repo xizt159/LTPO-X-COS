@@ -41,6 +41,7 @@ final class AdaptivePolicy {
         Scene(String p,int process,boolean shown){this(p,process,shown,false);}
         Scene(String p,int process,boolean shown,boolean fullscreen){pkg=p;pid=process;ime=shown;full=fullscreen;}
     }
+    static void systemModeChanged(){Handler h=worker;if(h!=null)h.post(AdaptivePolicy::recompute);}
     static void install(ClassLoader cl) {
         android.os.HandlerThread thread=new android.os.HandlerThread("LTPO-X-COSAdaptive");
         thread.start(); worker=new Handler(thread.getLooper()){
@@ -82,7 +83,7 @@ final class AdaptivePolicy {
                 @Override protected void afterHookedMethod(MethodHookParam p){
                     if(!Integer.valueOf(0).equals(p.args[0]) || p.getThrowable()!=null)return;
                     Object ranges=field(p.getResult(),"primary");
-                    if(cap>0){
+                    if(cap>0&&Hook.systemStandardMode()){
                         try{clampResolvedRanges(p.getResult(),cap);}
                         catch(Throwable t){fault="resolved-cap-"+t.getClass().getSimpleName();}
                     }
@@ -98,7 +99,7 @@ final class AdaptivePolicy {
                 @Override protected void afterHookedMethod(MethodHookParam p){
                     int limit=cap;
                     if(limit>0&&!ime&&VideoIdlePolicy.recentInteraction())limit=Config.effectiveRate();
-                    if(!Config.on("refresh") || !ready || limit==0 || !Integer.valueOf(0).equals(p.args[0])
+                    if(!Config.on("refresh") || !Hook.systemStandardMode() || !ready || limit==0 || !Integer.valueOf(0).equals(p.args[0])
                             || p.getThrowable()!=null || !(p.getResult() instanceof SparseArray))return;
                     // Only the captured director's storage; never another display/director.
                     if(p.thisObject!=field(director,"mVotesStorage"))return;
@@ -188,7 +189,7 @@ final class AdaptivePolicy {
     private static void initialize(){
         if(context==null||powerRegistered)return;
         ready=voteHook&&(sceneHook||focusHook);
-        Config.listen(()->worker.post(()->{Hook.configurationChanged(context);NativeIdlePolicy.refresh();NativeReservePolicy.refresh();AnimationPolicy.refresh();cap=-1;recompute();}));
+        Config.listen(()->worker.post(()->{        Hook.configurationChanged();NativeIdlePolicy.refresh();NativeReservePolicy.refresh();AnimationPolicy.refresh();cap=-1;recompute();}));
         Config.init(context);
         Idle144Policy.start(worker,AdaptivePolicy::recompute);
         VideoIdlePolicy.start(context,worker,AdaptivePolicy::recompute);
@@ -264,7 +265,7 @@ final class AdaptivePolicy {
         VideoIdlePolicy.scene(pkg,pid,sceneFull,interactive&&!ime&&!rawIme);
         if(!Config.refresh("ime")){IME.clear();ime=false;rawIme=false;}
         Idle144Policy.scene(pkg,pid,sceneFull,interactive&&!ime&&!rawIme&&!VideoIdlePolicy.playingVideo());
-        int next=ready&&Config.on("refresh")?(interactive?Math.min(Config.effectiveRate(),ime||VideoIdlePolicy.watching()?60:Idle144Policy.active()?120:Config.effectiveRate()):0):0;
+        int next=ready&&Config.on("refresh")&&Hook.systemStandardMode()?(interactive?Math.min(Config.effectiveRate(),ime||VideoIdlePolicy.watching()?60:Idle144Policy.active()?120:Config.effectiveRate()):0):0;
         String policy=pkg+":"+Config.effectiveRate()+":"+Config.fixed()+":"+Config.explicitProfile()+":"+BatteryDisplayPolicy.capEnabled();
         boolean held=holdFixedRate();if(held!=nativeFixedHeld){nativeFixedHeld=held;NativeIdlePolicy.refresh();NativeReservePolicy.refresh();}
         if(next==cap&&policy.equals(appliedAppPolicy))return;appliedAppPolicy=policy;cap=next;policyChanges++;
@@ -281,7 +282,7 @@ final class AdaptivePolicy {
         PowerManager pm=context==null?null:(PowerManager)context.getSystemService(Context.POWER_SERVICE);
         return pm!=null&&pm.isPowerSaveMode();
     }
-    static boolean holdFixedRate(){return ready&&interactive&&Config.fixed()&&!activeRequest();}
+    static boolean holdFixedRate(){return ready&&interactive&&Hook.systemStandardMode()&&Config.fixed()&&!activeRequest();}
     static boolean activeRequest(){return interactive&&(ime||VideoIdlePolicy.watching()||Idle144Policy.active());}
     static boolean coldAndUnrestricted(){
         try{

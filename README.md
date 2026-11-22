@@ -27,17 +27,15 @@ runtime requirement or turn these Java hooks into kernel-level hooks.
 | Feature | Behavior |
 | --- | --- |
 | Display master switch | Enables display modifications independently of AOD. |
-| Interaction refresh rate | Select **60 / 90 / 120 / 144 / 165Hz** as the ordinary interaction ceiling. |
-| General refresh-rate cap | Optional and off by default. When enabled, caps the global and per-app refresh ceiling (default **120Hz**) at all times, regardless of Battery Saver. LTPO's native adaptive behavior remains enabled. |
-| Battery Saver refresh-rate cap | A separate optional cap (default **120Hz**) that applies only while Android Battery Saver is enabled. Both caps can be enabled together; the lower ceiling takes effect. |
-| Native Settings selector | Expands the existing OPlus refresh-rate selector, retaining the native popup and adding an up/down indicator. |
+| Maximum refresh rate | Select **60 / 90 / 120 / 144 / 165Hz**, plus **185Hz** when reported as supported by the device. This is the ordinary interaction ceiling; LTPO remains free to lower the rate while idle. Select **Standard (60Hz)** in system display settings to enable the module ceiling. Custom system refresh modes are never overridden. |
+| Battery Saver cap | Optional **60Hz** maximum while Android Battery Saver is active. LTPO's native adaptive idle remains enabled. |
 | Low-brightness idle | Adjusts recognized eligibility conditions to permit deeper idle where supported, while retaining DC eligibility. |
 | 1Hz idle tables | Changes recognized 60/90/120/165Hz idle tables; unknown schemas are preserved. A table change is not a guarantee of 1Hz in every scene. |
 | Faster adaptive idle | Shortens recognized default delays to 600ms/200ms; application-specific timings are preserved. No fixed sequence of refresh rates is forced. |
-| Selected-rate animations | Adjusts supported launcher and transition requests to the selected rate, retaining thermal and relevant fingerprint restrictions. |
+| Selected-rate animations | Adjusts supported launcher and transition requests to the selected maximum rate, retaining thermal and relevant fingerprint restrictions. |
 | Keyboard cap | Applies a temporary **60Hz ceiling after 300ms** of keyboard visibility, allowing the entrance animation to finish first. The previous policy resumes after dismissal. |
 | Passive video policy | Uses a **60Hz ceiling with native 30Hz behavior where applicable**, only after supported playback is detected and input/content settle. Google Photos can be detected from advancing video-surface evidence even without a media session. Interaction restores the selected ceiling. Supported fullscreen and inline playback are handled without permanently capping the whole app. **120Hz is not selected for video.** |
-| Disable LTPO | Requests the selected rate during ordinary use. Temporary keyboard/video limits and thermal constraints still apply. |
+| Disable LTPO | Holds the selected maximum during ordinary use. Temporary keyboard/video limits and thermal constraints still apply. |
 | Experimental 144Hz fallback | Optionally requests the real 120Hz timing during verified idle, then returns to 144Hz on interaction. **144Hz-to-1Hz remains unresolved.** |
 | Show refresh rate | Toggles Android's green refresh-rate indicator in the top-left corner. Changing the developer option requires granting root access when prompted. |
 
