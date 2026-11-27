@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.*;
 import android.widget.*;
+import java.io.IOException;
 import java.util.*;
 
 /** Rounded cards, two distinct sections, and root only for explicitly requested actions. */
@@ -26,6 +27,8 @@ public final class MainActivity extends Activity {
     private boolean refreshRateOverlaySyncing;
     private boolean refreshRateOverlayStateLoading;
     private static final String SUPPORTED_APPS_FRAGMENT="com.oplus.settings.feature.display.refreshhigh.ScreenRefreshHighAppNewFragment";
+    private static final String REFRESH_RATE_FRAGMENT="com.oplus.settings.feature.display.ScreenRefreshRateFragment";
+    private static final String SUPPORTED_APPS_COMPONENT="com.android.settings/com.oplus.settings.OplusSubSettings";
     @Override protected void onResume(){
         super.onResume();
         syncRefreshRateOverlayState();
@@ -49,14 +52,47 @@ public final class MainActivity extends Activity {
                 .setPositiveButton("Close",null).show();
     }
     private void openSupportedApps(){
-        Intent intent=new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS);
-        intent.putExtra(":settings:show_fragment",SUPPORTED_APPS_FRAGMENT);
-        intent.putExtra(":settings:show_fragment_title","Supported apps");
-        intent.putExtra(":settings:show_fragment_as_subsetting",true);
-        try{startActivity(intent);}
-        catch(ActivityNotFoundException e){
-            new AlertDialog.Builder(this).setTitle("Supported apps")
-                    .setMessage("Could not open the native Supported apps screen.\n\n"+e.getMessage())
+        openSettingsFragmentAsRoot(SUPPORTED_APPS_FRAGMENT,"Supported apps");
+    }
+    private void openRefreshRateSettings(){
+        openSettingsFragmentAsRoot(REFRESH_RATE_FRAGMENT,"Refresh rate");
+    }
+    private void openSettingsFragmentAsRoot(String fragment,String title){
+        new Thread(()->{
+            String failure;
+            try{startSettingsFragmentAsRoot(fragment,title);return;}
+            catch(IOException e){failure=e.getMessage();}
+            catch(InterruptedException e){Thread.currentThread().interrupt();failure="The root launch was interrupted.";}
+            String message=failure;
+            runOnUiThread(()->openDisplaySettingsFallback(title,message));
+        },"OpenSettingsFragment").start();
+    }
+    private void startSettingsFragmentAsRoot(String fragment,String title)throws IOException,InterruptedException{
+        String command="am start --user 0 -a android.intent.action.MAIN -n "+SUPPORTED_APPS_COMPONENT
+                +" --es ':settings:show_fragment' '"+fragment+"'"
+                +" --es ':settings:show_fragment_title' '"+title+"'"
+                +" --ez ':settings:show_fragment_as_subsetting' true";
+        Process process=new ProcessBuilder("su","-c",command).redirectErrorStream(true).start();
+        try{
+            if(!process.waitFor(10,java.util.concurrent.TimeUnit.SECONDS)){
+                process.destroyForcibly();throw new IOException("Timed out waiting for the Settings screen to open.");
+            }
+        }catch(InterruptedException e){process.destroyForcibly();throw e;}
+        String output;
+        try(Scanner scanner=new Scanner(process.getInputStream()).useDelimiter("\\A")){output=scanner.hasNext()?scanner.next().trim():"";}
+        if(process.exitValue()!=0||output.contains("Exception")||output.contains("Error")){
+            throw new IOException(output.isEmpty()?"Root launch exited with status "+process.exitValue():output);
+        }
+    }
+    private void openDisplaySettingsFallback(String title,String failure){
+        try{
+            startActivity(new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS));
+            new AlertDialog.Builder(this).setTitle(title)
+                    .setMessage("Could not open "+title+" directly; opened Display settings instead.\n\n"+failure)
+                    .setPositiveButton("OK",null).show();
+        }catch(ActivityNotFoundException e){
+            new AlertDialog.Builder(this).setTitle(title)
+                    .setMessage("Could not open Display settings.\n\n"+e.getMessage())
                     .setPositiveButton("OK",null).show();
         }
     }
@@ -128,7 +164,7 @@ public final class MainActivity extends Activity {
         toggle(l,"refresh","Enable display adjustments","Independent of AOD features",null);
         boolean enabled=on("refresh");
         l=group("Refresh rate");
-        action(l,"Open display settings","Review system display options",false,()->{try{startActivity(new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS));}catch(Exception ignored){}});
+        action(l,"Open display settings","Open system refresh-rate controls",false,this::openRefreshRateSettings);
         if(enabled){
             action(l,"Maximum refresh rate: "+state.getInt("rate",165)+" Hz","Caps interaction and animation rates while preserving adaptive LTPO idle.",true,()->{
                 int selected=Arrays.binarySearch(hz,state.getInt("rate",165));new AlertDialog.Builder(this).setTitle("Maximum refresh rate").setSingleChoiceItems(rates,Math.max(0,selected),(d,n)->{Bundle b=new Bundle();b.putInt("rate",hz[n]);write(b);d.dismiss();renderPreservingScroll();}).setNegativeButton("Cancel",null).show();
