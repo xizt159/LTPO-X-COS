@@ -81,11 +81,11 @@ public class VideoPolicyTest {
         sample();yes(!VideoIdlePolicy.watching());SurfaceSnapshot.duringRead=null;
 
         Method discover=Hook.class.getDeclaredMethod("hasExpectedRateMap",ClassLoader.class);discover.setAccessible(true);
-        yes((Boolean)discover.invoke(null,VideoPolicyTest.class.getClassLoader()));set(Hook.class,"selectedSettingMode",2);yes(Hook.systemStandardMode());
+        yes((Boolean)discover.invoke(null,VideoPolicyTest.class.getClassLoader()));set(Hook.class,"selectedSettingMode",2);
         Method install=Hook.class.getDeclaredMethod("hookDefaultWindowRate",ClassLoader.class);install.setAccessible(true);install.invoke(null,VideoPolicyTest.class.getClassLoader());
         com.android.server.wm.OplusRefreshRatePolicyImpl policy=new com.android.server.wm.OplusRefreshRatePolicyImpl();
         Method candidate=policy.getClass().getDeclaredMethod("getWindowPreferredModeId",int.class);
-        arm();set(Hook.class,"selectedSettingMode",3);yes((Integer)XposedBridge.call(candidate,policy,7)==7);set(Hook.class,"selectedSettingMode",2);
+        arm();set(Hook.class,"selectedSettingMode",3);yes((Integer)XposedBridge.call(candidate,policy,7)==2);set(Hook.class,"selectedSettingMode",2);
         arm();for(int request:new int[]{1,3,4,7})yes((Integer)XposedBridge.call(candidate,policy,request)==2);
         yes((Integer)XposedBridge.call(candidate,policy,2)==2);yes((Integer)XposedBridge.call(candidate,policy,6)==6);
         policy.mPickRefreshRateData.name="com.android.systemui";yes((Integer)XposedBridge.call(candidate,policy,7)==7);

@@ -31,11 +31,6 @@ public final class Hook implements IXposedHookLoadPackage {
         return RateProfile.rateId(rate,ids,standard==null?highRateId:standard);
     }
     static int configuredRateId(){return rateId(BatteryDisplayPolicy.limit(Config.effectiveRate()));}
-    static boolean systemStandardMode(){
-        Integer standard=rateIds.get(60);
-        return RefreshModePolicy.shouldOverride(Config.on("refresh"),selectedSettingMode,
-                standard==null?-1:standard);
-    }
     private static volatile Object lastDc;
     private static volatile int lastDcRequested=-1;
     static void configurationChanged(){
@@ -194,11 +189,6 @@ public final class Hook implements IXposedHookLoadPackage {
         }
     }
 
-    private static boolean unlockSetting(int mode) {
-        Integer standard=rateIds.get(60);
-        return RefreshModePolicy.shouldOverride(Config.on("refresh"),mode,standard==null?-1:standard);
-    }
-
     private static void hookDefaultWindowRate(ClassLoader cl) {
         try {
             Class<?> policy = XposedHelpers.findClass(
@@ -216,7 +206,6 @@ public final class Hook implements IXposedHookLoadPackage {
                             Object modeValue = field(observer, "mCurrentPickMode");
                             int mode = modeValue instanceof Number
                                     ? ((Number) modeValue).intValue() : selectedSettingMode;
-                            if(!unlockSetting(mode))return;
                             int picked = ((Number) p.args[0]).intValue();
                             if(Idle144Policy.owner(candidatePackage(field(p.thisObject,"mPickRefreshRateData")))&&(picked==4||picked==3||picked==7)){p.args[0]=3;return;}
                             videoPolicy=p.thisObject;
@@ -320,7 +309,7 @@ public final class Hook implements IXposedHookLoadPackage {
                             boolean changed=selectedSettingMode!=requested;
                             selectedSettingMode = requested;
                             if(changed)AdaptivePolicy.systemModeChanged();
-                            if (!Config.on("refresh") || !unlockSetting(requested)) {
+                            if (!Config.on("refresh")) {
                                 return;
                             }
                             p.setResult(Integer.valueOf(configuredRateId()));
@@ -342,8 +331,7 @@ public final class Hook implements IXposedHookLoadPackage {
                             || !(p.args[0] instanceof Number)) {
                         return;
                     }
-                    int pickMode = ((Number) p.args[0]).intValue();
-                    if (unlockSetting(pickMode)) {
+                    if (Config.on("refresh")) {
                         p.setResult(Integer.valueOf(configuredRateId()));
                     }
                 }

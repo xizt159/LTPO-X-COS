@@ -5,6 +5,11 @@
 ### Fixed
 
 - Restore compatibility with the vendor's mode-0 **Standard (60 Hz)** setting, as used by the beta4 refresh policy. Without this sentinel, maximum-rate overrides and the Battery Saver ceiling could both be bypassed.
+- Remove the requirement to select **Standard (60 Hz)**; the selected maximum and Battery Saver cap now apply regardless of the system refresh mode.
+
+### Changed
+
+- Hide dependent display and AOD controls while their master switch is off, move activation guidance into a **Help** alert, place **Show refresh rate** in **Developer options**, and distinguish selection controls from navigation links.
 
 ### Release
 

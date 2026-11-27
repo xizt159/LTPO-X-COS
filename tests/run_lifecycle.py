@@ -27,12 +27,11 @@ files['android/content/pm/PackageManager.java']='package android.content.pm;publ
 files['com/android/server/wm/OplusRefreshRateUtils.java']=files['com/android/server/wm/OplusRefreshRateUtils.java'].replace('case 7:return 165f;', 'case 7:return 165f;case 8:return 185f;')
 files['com/ltpoxcos/LifecycleTest.java']=files['com/ltpoxcos/LifecycleTest.java'].replace(
  '  Handler h=new Handler();set("worker",h);',
- '  Field ids=Hook.class.getDeclaredField("rateIds");ids.setAccessible(true);ids.set(null,java.util.Map.of(60,2,90,1,120,3,144,4,165,7,185,8));Field selected=Hook.class.getDeclaredField("selectedSettingMode");selected.setAccessible(true);selected.setInt(null,0);yes(Hook.systemStandardMode());Handler h=new Handler();set("worker",h);')
+ '  Field ids=Hook.class.getDeclaredField("rateIds");ids.setAccessible(true);ids.set(null,java.util.Map.of(60,2,90,1,120,3,144,4,165,7,185,8));Field selected=Hook.class.getDeclaredField("selectedSettingMode");selected.setAccessible(true);selected.setInt(null,3);Handler h=new Handler();set("worker",h);')
 for name,text in files.items():
  f=src/name;f.parent.mkdir(parents=True,exist_ok=True);f.write_text(text,encoding='utf-8')
 actual=[repo/'module/src/com/ltpoxcos'/name for name in ['AppProfiles.java','Idle144Policy.java','RootFrame.java','AodAccess.java','AodTapSequence.java','AodTapPolicy.java','AodBackdropPolicy.java','PanoramicStatusPolicy.java','SystemVersion.java','ScopeRestart.java','AodPolicy.java','AodValues.java','AodLiftPolicy.java','NativeTables.java','AdfrVersion.java','VideoIdlePolicy.java','VideoFrameEvidence.java','NativeReservePolicy.java','AdaptivePolicy.java','AdaptiveState.java','ImeLatch.java','NativeIdlePolicy.java','AnimationPolicy.java','RateProfile.java','Hook.java','xp/IXposedHookLoadPackage.java','xp/callbacks/XC_LoadPackage.java']]
 actual.append(repo/"module/src/com/ltpoxcos/BatteryDisplayPolicy.java")
-actual.append(repo/"module/src/com/ltpoxcos/RefreshModePolicy.java")
 actual.append(repo/"module/src/com/ltpoxcos/LockCameraPolicy.java")
 actual.append(repo/"tests/VideoPolicyTest.java")
 actual.append(repo/"tests/UnifiedTest.java")

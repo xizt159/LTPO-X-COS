@@ -18,7 +18,7 @@ Adaptive refresh-rate policies and Always-On Display controls for compatible One
 | Feature                | Behavior                                                                                                                                                               |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Maximum refresh rate   | Choose 60, 90, 120, 144, or 165 Hz; 185 Hz is offered when supported by the device. LTPO can still lower the rate while idle.                                          |
-| System display setting | Select **Standard (60 Hz)** to enable LTPO-X's maximum-rate policy. Custom system refresh modes are left unchanged.                                                    |
+| System display setting | LTPO-X applies its selected maximum regardless of the system's selected refresh mode.                                                                                     |
 | Battery Saver cap      | Optional 60 Hz maximum while the device's own Battery Saver is active; adaptive LTPO idle remains available.                                                           |
 | Lock screen/camera cap | Optional 120 Hz maximum while the keyguard is locked or a detected camera app is foreground; the camera viewfinder remains camera-controlled.                          |
 | Adaptive idle          | 60/90/120/144 Hz modes can reach 1 Hz when firmware permits. At 165 Hz, the idle floor varies by firmware (about 33–55 Hz). The 144-to-1 Hz path remains experimental. |
@@ -61,7 +61,7 @@ Availability depends on the device's native AOD implementation.
 2. Install the release APK and enable **LTPO-X (COS)** in a compatible module manager.
 3. Enable the recommended scopes: Android/System (`android` or `system`), Settings (`com.android.settings`), SystemUI (`com.android.systemui`), and OPlus AOD (`com.oplus.aod`).
 4. Reboot after installing or updating the APK.
-5. In system display settings, select **Standard (60 Hz)** if you want LTPO-X to manage the maximum refresh rate. Custom system modes are intentionally preserved.
+5. LTPO-X manages the selected maximum regardless of the system refresh mode.
 
 The in-app **Restart scopes** action requires root and does not reload `system_server`; it does not replace a full reboot after an APK update. Root is also required to change Android's refresh-rate overlay indicator.
 
