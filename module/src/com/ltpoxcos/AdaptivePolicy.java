@@ -124,7 +124,7 @@ final class AdaptivePolicy {
                             fixed.add(physicalVote.invoke(null,(float)Config.effectiveRate(),(float)Config.effectiveRate()+0.01f));
                             fixed.add(renderVote.invoke(null,(float)Config.effectiveRate(),(float)Config.effectiveRate()+0.01f));copy.put(baselinePriority,combined.newInstance(fixed));
                         }
-                        if(limit<Config.effectiveRate()||activeRequest()||BatteryDisplayPolicy.capEnabled()){
+                        if(limit<Config.effectiveRate()||activeRequest()||BatteryDisplayPolicy.capEnabled()||(!Config.explicitProfile()&&Config.effectiveRate()<RateProfile.HIGH)){
                             addCeiling(copy,priority,limit,limit);
                         }
                         p.setResult(copy);voteReads++;

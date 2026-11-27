@@ -18,6 +18,7 @@ public final class MainActivity extends Activity {
     private boolean refreshRateOverlayUpdating;
     private boolean refreshRateOverlaySyncing;
     private boolean refreshRateOverlayStateLoading;
+    private static final String SUPPORTED_APPS_FRAGMENT="com.oplus.settings.feature.display.refreshhigh.ScreenRefreshHighAppNewFragment";
     @Override protected void onResume(){
         super.onResume();
         syncRefreshRateOverlayState();
@@ -36,9 +37,21 @@ public final class MainActivity extends Activity {
         return "";
     }
     private void help(){
-        new AlertDialog.Builder(this).setTitle("Help")
+        new AlertDialog.Builder(this).setTitle("How to activate")
                 .setMessage("Enable LTPO-X (COS) in LSPosed for Android, Settings, SystemUI and AOD, then reboot. Disable overlapping display modules. AOD availability changes may require reopening its settings or restarting its scopes.")
                 .setPositiveButton("Close",null).show();
+    }
+    private void openSupportedApps(){
+        Intent intent=new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS);
+        intent.putExtra(":settings:show_fragment",SUPPORTED_APPS_FRAGMENT);
+        intent.putExtra(":settings:show_fragment_title","Supported apps");
+        intent.putExtra(":settings:show_fragment_as_subsetting",true);
+        try{startActivity(intent);}
+        catch(ActivityNotFoundException e){
+            new AlertDialog.Builder(this).setTitle("Supported apps")
+                    .setMessage("Could not open the native Supported apps screen.\n\n"+e.getMessage())
+                    .setPositiveButton("OK",null).show();
+        }
     }
     private void restartScopes(){
         if(restarting)return;
@@ -67,7 +80,11 @@ public final class MainActivity extends Activity {
         getWindow().setStatusBarColor(bg);getWindow().setNavigationBarColor(bg);
         getWindow().getDecorView().setSystemUiVisibility(dark?0:View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
         root=vertical();root.setPadding(dp(20),dp(16),dp(20),0);root.setBackgroundColor(bg);root.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);setContentView(root);
-        LinearLayout header=new LinearLayout(this);header.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);header.setGravity(Gravity.CENTER_VERTICAL);TextView title=text("LTPO-X (COS)",28,ink);title.setTypeface(null,Typeface.BOLD);title.setGravity(Gravity.CENTER_VERTICAL);header.addView(title,new LinearLayout.LayoutParams(0,dp(48),1));ImageButton restart=new ImageButton(this);restart.setImageDrawable(new ToolbarIcon(ink));restart.setBackground(shape(card,24));restart.setContentDescription("Restart scopes");restart.setPadding(dp(13),dp(13),dp(13),dp(13));restart.setOnClickListener(v->restartScopes());header.addView(restart,new LinearLayout.LayoutParams(dp(48),dp(48)));Button helpButton=new Button(this);helpButton.setText("?");helpButton.setTextSize(20);helpButton.setTextColor(ink);helpButton.setMinWidth(0);helpButton.setMinHeight(0);helpButton.setBackground(shape(card,24));helpButton.setContentDescription("Help");helpButton.setPadding(dp(13),dp(13),dp(13),dp(13));helpButton.setOnClickListener(v->help());header.addView(helpButton,new LinearLayout.LayoutParams(dp(48),dp(48)));root.addView(header);
+        LinearLayout header=new LinearLayout(this);header.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);header.setGravity(Gravity.CENTER_VERTICAL);
+        TextView title=text("LTPO-X (COS)",28,ink);title.setTypeface(null,Typeface.BOLD);title.setGravity(Gravity.CENTER_VERTICAL);header.addView(title,new LinearLayout.LayoutParams(0,dp(48),1));
+        ImageButton restart=new ImageButton(this);restart.setImageDrawable(new ToolbarIcon(ink));restart.setBackground(shape(card,24));restart.setContentDescription("Restart scopes");restart.setPadding(dp(13),dp(13),dp(13),dp(13));restart.setOnClickListener(v->restartScopes());header.addView(restart,new LinearLayout.LayoutParams(dp(48),dp(48)));
+        TextView helpButton=text("?",24,ink);helpButton.setGravity(Gravity.CENTER);helpButton.setPadding(0,0,0,0);helpButton.setBackground(shape(card,24));helpButton.setContentDescription("Help");helpButton.setOnClickListener(v->help());LinearLayout.LayoutParams helpParams=new LinearLayout.LayoutParams(dp(48),dp(48));helpParams.setMargins(dp(8),0,0,0);header.addView(helpButton,helpParams);
+        root.addView(header);
         root.addView(text(systemVersion()+"  ·  "+version(),13,muted));
         LinearLayout tabs=new LinearLayout(this);tabs.setPadding(0,dp(15),0,dp(12));root.addView(tabs);
         for(int i=0;i<2;i++){final int selected=i;TextView t=text(i==0?"Display & Brightness":"Always-on Display",15,tab==i?0xff102327:muted);t.setGravity(Gravity.CENTER);t.setPadding(dp(8),dp(13),dp(8),dp(13));t.setBackground(shape(tab==i?accent:card,18));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-2,1);lp.setMargins(dp(3),0,dp(3),0);tabs.addView(t,lp);t.setOnClickListener(v->{tab=selected;render();});}
@@ -90,20 +107,27 @@ public final class MainActivity extends Activity {
         sw.setOnCheckedChangeListener((button,value)->{save(key,value);if(master==null)renderPreservingScroll();});
         row.setOnClickListener(v->{if(sw.isEnabled())sw.setChecked(!sw.isChecked());});
     }
-    private void action(LinearLayout group,String title,String subtitle,String indicator,Runnable click){LinearLayout l=vertical();l.setPadding(0,dp(12),0,dp(12));l.addView(text(title+"  "+indicator,16,ink));l.addView(text(subtitle,12,muted));group.addView(l);l.setOnClickListener(v->click.run());}
+    private void action(LinearLayout group,String title,String subtitle,String indicator,Runnable click){
+        LinearLayout l=vertical();l.setPadding(0,dp(12),0,dp(12));
+        LinearLayout heading=new LinearLayout(this);heading.setGravity(Gravity.CENTER_VERTICAL);
+        TextView label=text(title,16,ink);heading.addView(label,new LinearLayout.LayoutParams(0,-2,1));
+        TextView mark=text(indicator,16,ink);mark.setIncludeFontPadding(false);mark.setGravity(Gravity.CENTER);mark.setPadding(dp(8),0,0,0);heading.addView(mark);
+        l.addView(heading);l.addView(text(subtitle,12,muted));group.addView(l);l.setOnClickListener(v->click.run());
+    }
     private void display(){
         LinearLayout l=group("Display & Brightness");
         toggle(l,"refresh","Enable display adjustments","Independent of AOD features",null);
-        action(l,"Open display settings","Review system display options","↗",()->{try{startActivity(new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS));}catch(Exception ignored){}});
         boolean enabled=on("refresh");
+        l=group("Refresh rate");
+        action(l,"Open display settings","Review system display options","↗",()->{try{startActivity(new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS));}catch(Exception ignored){}});
         if(enabled){
-            action(l,"Maximum refresh rate: "+state.getInt("rate",165)+" Hz","Caps interaction and animation rates while preserving adaptive LTPO idle.","⌄",()->{
+            action(l,"Maximum refresh rate: "+state.getInt("rate",165)+" Hz","Caps interaction and animation rates while preserving adaptive LTPO idle.","▾",()->{
                 int selected=Arrays.binarySearch(hz,state.getInt("rate",165));new AlertDialog.Builder(this).setTitle("Maximum refresh rate").setSingleChoiceItems(rates,Math.max(0,selected),(d,n)->{Bundle b=new Bundle();b.putInt("rate",hz[n]);write(b);d.dismiss();renderPreservingScroll();}).setNegativeButton("Cancel",null).show();
             });
             info(l,"LTPO-X applies the selected maximum regardless of the system refresh mode. Idle minimum: 1 Hz at 60 / 90 / 120 Hz; at 144 Hz, enable “144 → 120 while idle” to reach 1 Hz. At 165 Hz, the idle floor is firmware-dependent (about 33–55 Hz).");
             toggle(l,"disable_ltpo","Disable LTPO during interaction","Hold the selected rate; video, keyboard and thermal ceilings still apply","refresh");
             toggle(l,"app_policies","Enable per-app refresh policies","Choose fixed or variable per app in the native Supported apps page","refresh");
-            action(l,"Supported apps","Display settings → Refresh rate → Supported apps","↗",()->{try{startActivity(new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS));}catch(Exception ignored){}});
+            action(l,"Supported apps","Per-app refresh controls in system settings","↗",this::openSupportedApps);
             toggle(l,"lock_camera_120","Lock screen & camera at 120 Hz","Cap refresh at 120 Hz while locked or when a camera app is foreground; the camera viewfinder remains camera-controlled.","refresh");
             l=group("Battery Saver");
             toggle(l,"battery_saver_cap","Battery Saver Cap","Limits the maximum to 60 Hz while Android Battery Saver is active; LTPO idle remains adaptive.","refresh");
@@ -127,6 +151,7 @@ public final class MainActivity extends Activity {
         LinearLayout l=group("Always-On Display");
         toggle(l,"aod","Enable AOD features","Independent of display and refresh adjustments",null);
         if(on("aod")){
+            l=group("AOD features");
             toggle(l,"panoramic","Full-screen AOD","Enable supported panoramic AOD paths","aod");
             toggle(l,"all_day","All-day display","Expose the all-day panoramic option in system settings","aod");
             toggle(l,"block_tap","Two taps to reveal AOD, then one tap to lock","Once AOD is visible, the next tap wakes the lock screen without dismissing it","aod");
