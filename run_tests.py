@@ -11,7 +11,6 @@ def main():
 
     sources = [
         root / "module/src/com/ltpoxcos/RateProfile.java",
-        root / "module/src/com/ltpoxcos/RefreshModePolicy.java",
         root / "module/src/com/ltpoxcos/LockCameraPolicy.java",
         root / "module/src/com/ltpoxcos/AdaptiveState.java",
         root / "module/src/com/ltpoxcos/ImeLatch.java",

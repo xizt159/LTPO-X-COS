@@ -90,7 +90,7 @@ final class AdaptivePolicy {
                 @Override protected void afterHookedMethod(MethodHookParam p){
                     if(!Integer.valueOf(0).equals(p.args[0]) || p.getThrowable()!=null)return;
                     Object ranges=field(p.getResult(),"primary");
-                    if(cap>0&&Hook.systemStandardMode()){
+                    if(cap>0&&Config.on("refresh")){
                         try{clampResolvedRanges(p.getResult(),cap);}
                         catch(Throwable t){fault="resolved-cap-"+t.getClass().getSimpleName();}
                     }
@@ -107,7 +107,7 @@ final class AdaptivePolicy {
                     int limit=cap;
                     if(limit>0&&!ime&&VideoIdlePolicy.recentInteraction())limit=Config.effectiveRate();
                     if(limit>0)limit=BatteryDisplayPolicy.limit(limit);
-                    if(!Config.on("refresh") || !Hook.systemStandardMode() || !ready || limit==0 || !Integer.valueOf(0).equals(p.args[0])
+                    if(!Config.on("refresh") || !ready || limit==0 || !Integer.valueOf(0).equals(p.args[0])
                             || p.getThrowable()!=null || !(p.getResult() instanceof SparseArray))return;
                     // Only the captured director's storage; never another display/director.
                     if(p.thisObject!=field(director,"mVotesStorage"))return;
@@ -124,7 +124,7 @@ final class AdaptivePolicy {
                             fixed.add(physicalVote.invoke(null,(float)Config.effectiveRate(),(float)Config.effectiveRate()+0.01f));
                             fixed.add(renderVote.invoke(null,(float)Config.effectiveRate(),(float)Config.effectiveRate()+0.01f));copy.put(baselinePriority,combined.newInstance(fixed));
                         }
-                        if(limit<Config.effectiveRate()||activeRequest()||BatteryDisplayPolicy.capEnabled()){
+                        if(limit<Config.effectiveRate()||activeRequest()||BatteryDisplayPolicy.capEnabled()||(!Config.explicitProfile()&&Config.effectiveRate()<RateProfile.HIGH)){
                             addCeiling(copy,priority,limit,limit);
                         }
                         p.setResult(copy);voteReads++;
@@ -196,9 +196,9 @@ final class AdaptivePolicy {
     }
     private static void initialize(){
         if(context==null||powerRegistered)return;
-        ready=voteHook&&(sceneHook||focusHook);
+        ready=voteHook;
         Config.listen(()->worker.post(()->{        Hook.configurationChanged();NativeIdlePolicy.refresh();NativeReservePolicy.refresh();AnimationPolicy.refresh();cap=-1;recompute();}));
-        Config.init(context);
+        Config.initForSystemServer(context);
         loadCameraPackages(context);
         Idle144Policy.start(worker,AdaptivePolicy::recompute);
         VideoIdlePolicy.start(context,worker,AdaptivePolicy::recompute);
@@ -279,7 +279,7 @@ final class AdaptivePolicy {
         boolean keyguardLocked=lockCameraEnabled&&interactive&&isKeyguardLocked();
         lockCameraActive=LockCameraPolicy.active(lockCameraEnabled,interactive,
                 keyguardLocked,pkg,cameraPackages);
-        int next=ready&&Config.on("refresh")&&Hook.systemStandardMode()?(interactive?Math.min(Config.effectiveRate(),ime||VideoIdlePolicy.watching()?60:Idle144Policy.active()?120:Config.effectiveRate()):0):0;
+        int next=ready&&Config.on("refresh")?(interactive?Math.min(Config.effectiveRate(),ime||VideoIdlePolicy.watching()?60:Idle144Policy.active()?120:Config.effectiveRate()):0):0;
         next=LockCameraPolicy.ceiling(next,lockCameraActive);
         next=BatteryDisplayPolicy.limit(next);
         String policy=pkg+":"+Config.effectiveRate()+":"+Config.fixed()+":"+Config.explicitProfile()+":"+BatteryDisplayPolicy.capEnabled()+":"+lockCameraActive;
@@ -321,7 +321,7 @@ final class AdaptivePolicy {
         cameraPackages=Collections.unmodifiableSet(found);
         cameraLookupStatus=failures.isEmpty()?"packages:"+found.size():"packages:"+found.size()+",errors:"+failures;
     }
-    static boolean holdFixedRate(){return ready&&interactive&&Hook.systemStandardMode()&&Config.fixed()&&!activeRequest();}
+    static boolean holdFixedRate(){return ready&&interactive&&Config.on("refresh")&&Config.fixed()&&!activeRequest();}
     static boolean activeRequest(){return interactive&&(ime||VideoIdlePolicy.watching()||Idle144Policy.active());}
     static boolean coldAndUnrestricted(){
         try{
@@ -329,7 +329,7 @@ final class AdaptivePolicy {
             return p!=null&&!p.isPowerSaveMode()&&p.getCurrentThermalStatus()==PowerManager.THERMAL_STATUS_NONE;
         }catch(Throwable ignored){return false;}
     }
-    static String status(){return "LTPO-X (COS) 1.0.0 (20011): voteHook="+voteHook+" sceneHook="+sceneHook+" ready="+ready
+    static String status(){return "LTPO-X (COS) 1.0.1 (20012): voteHook="+voteHook+" sceneHook="+sceneHook+" ready="+ready
         +" focusHook="+focusHook+" sceneReads="+sceneReads+" scenePackage="+pkg+" sceneFull="+sceneFull+" config="+Config.debugStatus()+" cap="+cap+" ime="+ime+" rawIme="+rawIme+" imeShowDelayMs=300"+" imeSource="+imeSource+" policyChanges="+policyChanges+" voteReads="+voteReads
         +" profile="+Config.effectiveRate()+" baselinePriority="+baselinePriority+" specsDeoptimized="+specsDeoptimized
         +" resolvedPhysicalMax="+resolvedPhysicalMax+" resolvedRenderMax="+resolvedRenderMax

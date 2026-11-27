@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.0.1 — 2026-11-27
+
+### Fixed
+
+- Restore compatibility with the vendor's mode-0 **Standard (60 Hz)** setting, as used by the beta4 refresh policy. Without this sentinel, maximum-rate overrides and the Battery Saver ceiling could both be bypassed.
+- Remove the requirement to select **Standard (60 Hz)**; the selected maximum and Battery Saver cap now apply regardless of the system refresh mode.
+- Enforce the global maximum at display-mode priority when no explicit per-app profile is active, while keeping per-app profiles higher priority.
+- Keep global and Battery Saver refresh ceilings active when optional window-scene tracking is unavailable.
+- Load system-server settings immediately so refresh caps use the saved maximum and Battery Saver option.
+
+### Changed
+
+- Hide dependent controls while their master switch is off, give master switches separate sections, move activation guidance into **Help**, keep **Show refresh rate** in **Developer options**, align action rows with toggles using centered indicators, and open **Supported apps** and refresh-rate settings directly.
+- Slightly reduce the **Restart scopes** and **Help** buttons.
+- Align the header buttons with the app title and replace the selection marker with a clearer, larger chevron.
+
+### Release
+
+- Set version to `1.0.1` (`versionCode` `20012`) so this fix installs as an update to v1.0.0.
+- The release must be signed with the same key as existing installations.
+
 ## v1.0.0 — 2026-11-27
 
 ### Added

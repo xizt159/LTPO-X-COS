@@ -25,11 +25,6 @@ public class PolicyTest {
   yes(!LockCameraPolicy.active(false,true,true,"com.android.systemui",java.util.Collections.emptySet()));
   yes(!LockCameraPolicy.active(true,true,false,"com.example.app",cameras.keySet()));
   eq(120,LockCameraPolicy.ceiling(165,true));eq(90,LockCameraPolicy.ceiling(90,true));eq(165,LockCameraPolicy.ceiling(165,false));
-  yes(RefreshModePolicy.shouldOverride(true,2,2));
-  yes(!RefreshModePolicy.shouldOverride(true,3,2));
-  yes(!RefreshModePolicy.shouldOverride(true,-1,2));
-  yes(!RefreshModePolicy.shouldOverride(true,2,-1));
-  yes(!RefreshModePolicy.shouldOverride(false,2,2));
   for(int mode:new int[]{165})for(int peak:new int[]{165}){
    int[] nativeTable={10,33,33,peak,33,peak,33,peak,33,peak,33,0,0};int[] saved=nativeTable.clone();
    int[] idle=RateProfile.reserveIdleTable(mode,nativeTable);yes(idle!=null&&idle!=nativeTable);yes(Arrays.equals(nativeTable,saved));

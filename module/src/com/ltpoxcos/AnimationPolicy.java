@@ -28,7 +28,7 @@ final class AnimationPolicy {
     private static boolean insideLow(){ArrayDeque<Integer>s=SCOPE.get();return s!=null&&!s.isEmpty()&&s.peek()==40;}
     private static boolean allowed(int priority){
         if(priority==40||priority==90)Idle144Policy.interaction();
-        if(!Config.refresh("animation")||!Hook.systemStandardMode()||AdaptivePolicy.activeRequest())return false;
+        if(!Config.refresh("animation")||AdaptivePolicy.activeRequest())return false;
         if(priority==40)return true;
         boolean yes=thermalHook&&thermalKnown&&thermalMax>=Config.effectiveRate()&&AdaptivePolicy.coldAndUnrestricted();
         if(!yes)guarded90++;return yes;
