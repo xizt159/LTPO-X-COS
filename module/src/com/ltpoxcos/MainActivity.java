@@ -82,8 +82,8 @@ public final class MainActivity extends Activity {
         root=vertical();root.setPadding(dp(20),dp(16),dp(20),0);root.setBackgroundColor(bg);root.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);setContentView(root);
         LinearLayout header=new LinearLayout(this);header.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);header.setGravity(Gravity.CENTER_VERTICAL);
         TextView title=text("LTPO-X (COS)",28,ink);title.setTypeface(null,Typeface.BOLD);title.setGravity(Gravity.CENTER_VERTICAL);header.addView(title,new LinearLayout.LayoutParams(0,dp(48),1));
-        ImageButton restart=new ImageButton(this);restart.setImageDrawable(new ToolbarIcon(ink));restart.setBackground(shape(card,24));restart.setContentDescription("Restart scopes");restart.setPadding(dp(13),dp(13),dp(13),dp(13));restart.setOnClickListener(v->restartScopes());header.addView(restart,new LinearLayout.LayoutParams(dp(48),dp(48)));
-        TextView helpButton=text("?",24,ink);helpButton.setGravity(Gravity.CENTER);helpButton.setPadding(0,0,0,0);helpButton.setBackground(shape(card,24));helpButton.setContentDescription("Help");helpButton.setOnClickListener(v->help());LinearLayout.LayoutParams helpParams=new LinearLayout.LayoutParams(dp(48),dp(48));helpParams.setMargins(dp(8),0,0,0);header.addView(helpButton,helpParams);
+        ImageButton restart=new ImageButton(this);restart.setImageDrawable(new ToolbarIcon(ink));restart.setBackground(shape(card,21));restart.setContentDescription("Restart scopes");restart.setPadding(dp(11),dp(11),dp(11),dp(11));restart.setOnClickListener(v->restartScopes());header.addView(restart,new LinearLayout.LayoutParams(dp(42),dp(42)));
+        TextView helpButton=text("?",20,ink);helpButton.setGravity(Gravity.CENTER);helpButton.setPadding(0,0,0,0);helpButton.setBackground(shape(card,21));helpButton.setContentDescription("Help");helpButton.setOnClickListener(v->help());LinearLayout.LayoutParams helpParams=new LinearLayout.LayoutParams(dp(42),dp(42));helpParams.setMargins(dp(8),0,0,0);header.addView(helpButton,helpParams);
         root.addView(header);
         root.addView(text(systemVersion()+"  ·  "+version(),13,muted));
         LinearLayout tabs=new LinearLayout(this);tabs.setPadding(0,dp(15),0,dp(12));root.addView(tabs);
@@ -108,11 +108,10 @@ public final class MainActivity extends Activity {
         row.setOnClickListener(v->{if(sw.isEnabled())sw.setChecked(!sw.isChecked());});
     }
     private void action(LinearLayout group,String title,String subtitle,String indicator,Runnable click){
-        LinearLayout l=vertical();l.setPadding(0,dp(12),0,dp(12));
-        LinearLayout heading=new LinearLayout(this);heading.setGravity(Gravity.CENTER_VERTICAL);
-        TextView label=text(title,16,ink);heading.addView(label,new LinearLayout.LayoutParams(0,-2,1));
-        TextView mark=text(indicator,16,ink);mark.setIncludeFontPadding(false);mark.setGravity(Gravity.CENTER);mark.setPadding(dp(8),0,0,0);heading.addView(mark);
-        l.addView(heading);l.addView(text(subtitle,12,muted));group.addView(l);l.setOnClickListener(v->click.run());
+        LinearLayout row=new LinearLayout(this);row.setGravity(Gravity.CENTER_VERTICAL);row.setPadding(0,dp(10),0,dp(10));group.addView(row);
+        LinearLayout labels=vertical();row.addView(labels,new LinearLayout.LayoutParams(0,-2,1));labels.addView(text(title,16,ink));labels.addView(text(subtitle,12,muted));
+        TextView mark=text(indicator,24,ink);mark.setIncludeFontPadding(false);mark.setGravity(Gravity.CENTER);mark.setPadding(0,0,0,0);mark.setContentDescription(indicator.equals("↗")?"Open":"Select");row.addView(mark,new LinearLayout.LayoutParams(dp(48),dp(48)));
+        row.setOnClickListener(v->click.run());
     }
     private void display(){
         LinearLayout l=group("Display & Brightness");

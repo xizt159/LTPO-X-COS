@@ -10,7 +10,8 @@
 
 ### Changed
 
-- Hide dependent controls while their master switch is off, give master switches separate sections, move activation guidance into **Help**, keep **Show refresh rate** in **Developer options**, center action indicators, and open **Supported apps** directly.
+- Hide dependent controls while their master switch is off, give master switches separate sections, move activation guidance into **Help**, keep **Show refresh rate** in **Developer options**, align action rows with toggles using centered indicators, and open **Supported apps** directly.
+- Slightly reduce the **Restart scopes** and **Help** buttons.
 
 ### Release
 
