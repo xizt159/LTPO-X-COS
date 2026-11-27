@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.0.0 — 2026-11-27
+
+### Added
+
+- Added the optional **Lock screen & camera at 120 Hz** ceiling for a locked keyguard or detected foreground camera app.
+- Clarified the 144 Hz idle fallback and renamed the Battery Saver control.
+
+### Changed
+
+- Respect the selected maximum refresh rate when mapping supported device refresh modes, including devices whose highest available mode is 144 Hz.
+- Apply the optional 60 Hz Battery Saver ceiling while retaining adaptive LTPO behavior.
+- Removed duplicate section headings and clarified when the 144 → 120 Hz idle option is needed for 1 Hz idle.
+
+### Release
+
+- Set version to `1.0.0` (`versionCode` `20011`).
+- The release must be signed with the same key as existing installations to install as an update.
+- Lock-screen and camera refresh behavior depends on the device's keyguard, camera-app resolution, and OEM display policy; it has not been physically validated on every supported device.
+
 ## v1.0.0-beta.5 — Beta 5 — 2026-11-22
 
 ### Changed
