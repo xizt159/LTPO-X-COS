@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.0.1 — 2026-11-27
+
+### Fixed
+
+- Restore compatibility with the vendor's mode-0 **Standard (60 Hz)** setting, as used by the beta4 refresh policy. Without this sentinel, maximum-rate overrides and the Battery Saver ceiling could both be bypassed.
+
+### Release
+
+- Set version to `1.0.1` (`versionCode` `20012`) so this fix installs as an update to v1.0.0.
+- The release must be signed with the same key as existing installations.
+
 ## v1.0.0 — 2026-11-27
 
 ### Added

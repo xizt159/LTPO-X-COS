@@ -26,6 +26,7 @@ public class PolicyTest {
   yes(!LockCameraPolicy.active(true,true,false,"com.example.app",cameras.keySet()));
   eq(120,LockCameraPolicy.ceiling(165,true));eq(90,LockCameraPolicy.ceiling(90,true));eq(165,LockCameraPolicy.ceiling(165,false));
   yes(RefreshModePolicy.shouldOverride(true,2,2));
+  yes(RefreshModePolicy.shouldOverride(true,0,2));
   yes(!RefreshModePolicy.shouldOverride(true,3,2));
   yes(!RefreshModePolicy.shouldOverride(true,-1,2));
   yes(!RefreshModePolicy.shouldOverride(true,2,-1));
