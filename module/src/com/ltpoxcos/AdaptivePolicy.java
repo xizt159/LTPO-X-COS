@@ -314,7 +314,7 @@ final class AdaptivePolicy {
                 try{
                     List<ResolveInfo> handlers=manager.queryIntentActivities(new Intent(action),PackageManager.MATCH_DEFAULT_ONLY);
                     if(handlers==null)continue;
-                    for(ResolveInfo info:handlers)if(info.activityInfo!=null&&!info.activityInfo.packageName.isEmpty())found.add(info.activityInfo.packageName);
+                    for(ResolveInfo info:handlers)if(info.activityInfo!=null&&info.activityInfo.packageName!=null&&!info.activityInfo.packageName.isEmpty())found.add(info.activityInfo.packageName);
                 }catch(Throwable error){failures.add(error.getClass().getSimpleName());}
             }
         }catch(Throwable error){failures.add(error.getClass().getSimpleName());}
