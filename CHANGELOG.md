@@ -7,6 +7,7 @@
 - Restore compatibility with the vendor's mode-0 **Standard (60 Hz)** setting, as used by the beta4 refresh policy. Without this sentinel, maximum-rate overrides and the Battery Saver ceiling could both be bypassed.
 - Remove the requirement to select **Standard (60 Hz)**; the selected maximum and Battery Saver cap now apply regardless of the system refresh mode.
 - Enforce the global maximum at display-mode priority when no explicit per-app profile is active, while keeping per-app profiles higher priority.
+- Keep global and Battery Saver refresh ceilings active when optional window-scene tracking is unavailable.
 
 ### Changed
 

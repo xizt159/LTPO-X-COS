@@ -196,7 +196,7 @@ final class AdaptivePolicy {
     }
     private static void initialize(){
         if(context==null||powerRegistered)return;
-        ready=voteHook&&(sceneHook||focusHook);
+        ready=voteHook;
         Config.listen(()->worker.post(()->{        Hook.configurationChanged();NativeIdlePolicy.refresh();NativeReservePolicy.refresh();AnimationPolicy.refresh();cap=-1;recompute();}));
         Config.init(context);
         loadCameraPackages(context);
