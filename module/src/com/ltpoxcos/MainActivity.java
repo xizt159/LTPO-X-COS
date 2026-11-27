@@ -267,10 +267,10 @@ public final class MainActivity extends Activity {
     private void saveApps(List<String> ids,boolean[] checked){List<String> chosen=new ArrayList<>();for(int i=0;i<ids.size();i++)if(checked[i])chosen.add(ids.get(i));Bundle b=new Bundle();b.putString("apps",String.join(";",chosen));write(b);}
     private static final class ExpandMoreIcon extends Drawable {
         private final Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
-        ExpandMoreIcon(int color){paint.setColor(color);paint.setStrokeWidth(3);paint.setStyle(Paint.Style.STROKE);paint.setStrokeCap(Paint.Cap.ROUND);paint.setStrokeJoin(Paint.Join.ROUND);}
+        ExpandMoreIcon(int color){paint.setColor(color);paint.setStrokeWidth(2.5f);paint.setStyle(Paint.Style.STROKE);paint.setStrokeCap(Paint.Cap.ROUND);paint.setStrokeJoin(Paint.Join.ROUND);}
         @Override public void draw(Canvas canvas){
             Rect bounds=getBounds();int save=canvas.save();canvas.translate((bounds.left+bounds.right)/2f,(bounds.top+bounds.bottom)/2f);float scale=Math.min(bounds.width(),bounds.height())/48f;canvas.scale(scale,scale);
-            Path path=new Path();path.moveTo(-10,-4);path.lineTo(0,6);path.lineTo(10,-4);canvas.drawPath(path,paint);canvas.restoreToCount(save);
+            Path path=new Path();path.moveTo(-8,-3);path.lineTo(0,5);path.lineTo(8,-3);canvas.drawPath(path,paint);canvas.restoreToCount(save);
         }
         @Override public void setAlpha(int alpha){paint.setAlpha(alpha);invalidateSelf();}
         @Override public void setColorFilter(ColorFilter filter){paint.setColorFilter(filter);invalidateSelf();}
