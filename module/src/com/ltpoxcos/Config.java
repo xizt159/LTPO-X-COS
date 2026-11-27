@@ -16,6 +16,7 @@ final class Config {
     private static Context context;
     static Context context(){return context;}
     private static Handler handler;
+    private static boolean observerRegistered;
     private static volatile long successfulLoads,failedLoads;private static volatile String loadFault="not-loaded";
     private static boolean retryPending;
     static String debugStatus(){AppProfiles.Rule r=currentProfile();return "loads:"+successfulLoads+",failures:"+failedLoads+",fault:"+loadFault+",profiles:"+profiles.size()+",enabled:"+on("app_policies")+",owner:"+foreground+",rule:"+(r==null?"none":r.wire());}
@@ -40,12 +41,18 @@ final class Config {
     static int number(String key,int def,int min,int max){return Math.max(min,Math.min(max,values.getInt(key,def)));}
     static boolean app(String pkg){return refresh("app_policies")&&on("bulk_apps")&&Arrays.asList(values.getString("apps","").split(";")).contains(pkg);}
     static synchronized void listen(Runnable r){listeners.add(r);}
-    static synchronized void init(Context c){
-        if(context!=null||c==null)return;
-        context=c.getApplicationContext()==null?c:c.getApplicationContext();
-        HandlerThread t=new HandlerThread("UnifiedDisplayConfig");t.start();handler=new Handler(t.getLooper());
-        context.getContentResolver().registerContentObserver(URI,true,new ContentObserver(handler){@Override public void onChange(boolean self){load();}});
-        handler.post(Config::load);
+    static synchronized void init(Context c){initialize(c,false);}
+    static synchronized void initForSystemServer(Context c){initialize(c,true);}
+    private static void initialize(Context c,boolean loadImmediately){
+        if(c==null)return;
+        if(context==null){Context application=c.getApplicationContext();context=application==null?c:application;}
+        if(handler==null){HandlerThread t=new HandlerThread("UnifiedDisplayConfig");t.start();handler=new Handler(t.getLooper());}
+        if(!observerRegistered){
+            context.getContentResolver().registerContentObserver(URI,true,new ContentObserver(handler){@Override public void onChange(boolean self){load();}});
+            observerRegistered=true;
+        }
+        if(loadImmediately)load();
+        else if(!handler.post(Config::load))throw new IllegalStateException("Configuration loader is unavailable");
     }
     private static void load(){
         try{

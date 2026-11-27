@@ -198,7 +198,7 @@ final class AdaptivePolicy {
         if(context==null||powerRegistered)return;
         ready=voteHook;
         Config.listen(()->worker.post(()->{        Hook.configurationChanged();NativeIdlePolicy.refresh();NativeReservePolicy.refresh();AnimationPolicy.refresh();cap=-1;recompute();}));
-        Config.init(context);
+        Config.initForSystemServer(context);
         loadCameraPackages(context);
         Idle144Policy.start(worker,AdaptivePolicy::recompute);
         VideoIdlePolicy.start(context,worker,AdaptivePolicy::recompute);
