@@ -23,9 +23,14 @@ public final class Hook implements IXposedHookLoadPackage {
     private static volatile java.util.Map<Integer,Integer> rateIds=java.util.Collections.emptyMap();
     static int idleAwareRateId(){return Idle144Policy.active()?3:highRateId();}
     static int highRateId(){
-        return rateId(Config.effectiveRate());
+        return configuredRateId();
     }
-    static int rateId(int rate){Integer id=rateIds.get(rate);return id==null?highRateId:id;}
+    static int rateId(int rate){
+        java.util.Map<Integer,Integer> ids=rateIds;
+        Integer standard=ids.get(60);
+        return RateProfile.rateId(rate,ids,standard==null?highRateId:standard);
+    }
+    static int configuredRateId(){return rateId(BatteryDisplayPolicy.limit(Config.effectiveRate()));}
     static boolean systemStandardMode(){
         Integer standard=rateIds.get(60);
         return RefreshModePolicy.shouldOverride(Config.on("refresh"),selectedSettingMode,
@@ -227,7 +232,7 @@ public final class Hook implements IXposedHookLoadPackage {
                             String selectedPkg=candidatePackage(selectedPicker);
                             AppProfiles.Rule appRule=Config.profile(selectedPkg);
                             if(appRule!=null){if(!Config.foregroundOwner(selectedPkg))return;if(appRule.explicit()&&(picked==1||picked==2||picked==3||picked==4||picked==7))p.args[0]=rateId(Config.profileRate(selectedPkg));return;}
-                            if(Config.app(selectedPkg)&&candidateWindowRequestRate(selectedPicker)==0){p.args[0]=highRateId();return;}
+                            if(Config.app(selectedPkg)&&candidateWindowRequestRate(selectedPicker)==0){p.args[0]=configuredRateId();return;}
                             if (picked != 3) {
                                 return;
                             }
@@ -239,7 +244,7 @@ public final class Hook implements IXposedHookLoadPackage {
                                     || explicitUserOverrideRate(p.thisObject, pkg, mode) != 0) {
                                 return;
                             }
-                            p.args[0] = Integer.valueOf(highRateId());
+                            p.args[0] = Integer.valueOf(configuredRateId());
                         }
                     });
         } catch (Throwable ignored) {
@@ -318,7 +323,7 @@ public final class Hook implements IXposedHookLoadPackage {
                             if (!Config.on("refresh") || !unlockSetting(requested)) {
                                 return;
                             }
-                            p.setResult(Integer.valueOf(highRateId()));
+                            p.setResult(Integer.valueOf(configuredRateId()));
                         }
                     });
         } catch (Throwable ignored) {
@@ -339,7 +344,7 @@ public final class Hook implements IXposedHookLoadPackage {
                     }
                     int pickMode = ((Number) p.args[0]).intValue();
                     if (unlockSetting(pickMode)) {
-                        p.setResult(Integer.valueOf(highRateId()));
+                        p.setResult(Integer.valueOf(configuredRateId()));
                     }
                 }
             });

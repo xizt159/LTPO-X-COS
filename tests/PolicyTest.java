@@ -1,5 +1,6 @@
 package com.ltpoxcos;
 import java.util.Arrays;
+import java.util.Map;
 public class PolicyTest {
  static int checks;
  static void yes(boolean v){checks++;if(!v)throw new AssertionError("check "+checks);}
@@ -10,9 +11,13 @@ public class PolicyTest {
  public static void main(String[]args){
   eq(7,RateProfile.highRateId(id->id==7?165:0));
   eq(9,RateProfile.highRateId(id->id==9?165:id==4?144:0));
+  eq(4,RateProfile.highRateId(id->id==4?144:id==3?120:0));
   eq(-1,RateProfile.highRateId(id->id==8||id==9?165:0));
   eq(-1,RateProfile.highRateId(id->0));
   eq(-1,RateProfile.highRateId(id->{throw new IllegalArgumentException();}));
+  eq(4,RateProfile.rateId(144,Map.of(60,2,120,3,144,4,165,7),2));
+  eq(4,RateProfile.rateId(165,Map.of(60,2,120,3,144,4),2));
+  eq(2,RateProfile.rateId(60,Map.of(60,2,120,3),9));
   yes(RefreshModePolicy.shouldOverride(true,2,2));
   yes(!RefreshModePolicy.shouldOverride(true,3,2));
   yes(!RefreshModePolicy.shouldOverride(true,-1,2));

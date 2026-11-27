@@ -1,16 +1,29 @@
 package com.ltpoxcos;
 
+import java.util.Map;
+
 /** Runtime OEM rate IDs are distinct from physical Display.Mode IDs. */
 final class RateProfile {
     static final int HIGH=165;
     interface Lookup {float rate(int id)throws Throwable;}
+    static int rateId(int requestedRate,Map<Integer,Integer> ids,int fallbackId){
+        Integer exact=ids.get(requestedRate);if(exact!=null)return exact;
+        int bestRate=-1,bestId=-1;
+        for(Map.Entry<Integer,Integer> entry:ids.entrySet()){
+            if(entry.getKey()<=requestedRate&&entry.getKey()>bestRate){bestRate=entry.getKey();bestId=entry.getValue();}
+        }
+        return bestId>=0?bestId:fallbackId;
+    }
     static int highRateId(Lookup source){
-        try{if(Math.abs(source.rate(7)-HIGH)<0.1f)return 7;}catch(Throwable ignored){}
-        int found=-1;
+        int bestRate=-1,found=-1;
+        boolean ambiguous=false;
         for(int id=1;id<=16;id++)try{
-            if(Math.abs(source.rate(id)-HIGH)<0.1f){if(found>=0)return -1;found=id;}
+            float rate=source.rate(id);
+            int known=Math.abs(rate-HIGH)<0.1f?HIGH:Math.abs(rate-144f)<0.1f?144:-1;
+            if(known>bestRate){bestRate=known;found=id;ambiguous=false;}
+            else if(known==bestRate&&known>0)ambiguous=true;
         }catch(Throwable ignored){}
-        return found;
+        return ambiguous?-1:found;
     }
     static int[] reserveIdleTable(int reserveMode,int[] original){
         // Only the stock165Hz schema is supported.

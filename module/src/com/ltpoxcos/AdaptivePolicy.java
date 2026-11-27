@@ -1,6 +1,10 @@
 package com.ltpoxcos;
 
+import android.app.KeyguardManager;
+import android.content.Intent;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.SystemClock;
@@ -17,6 +21,9 @@ final class AdaptivePolicy {
     private static volatile Context context;
     private static Handler worker;
     private static volatile boolean voteHook,sceneHook,focusHook,ready,ime,interactive;
+    private static volatile boolean lockCameraActive;
+    private static volatile Set<String> cameraPackages=Collections.emptySet();
+    private static volatile String cameraLookupStatus="not-loaded",keyguardStatus="not-checked";
     private static volatile int cap;
     private static String appliedAppPolicy="";
     private static boolean nativeFixedHeld;
@@ -192,10 +199,12 @@ final class AdaptivePolicy {
         ready=voteHook&&(sceneHook||focusHook);
         Config.listen(()->worker.post(()->{        Hook.configurationChanged();NativeIdlePolicy.refresh();NativeReservePolicy.refresh();AnimationPolicy.refresh();cap=-1;recompute();}));
         Config.init(context);
+        loadCameraPackages(context);
         Idle144Policy.start(worker,AdaptivePolicy::recompute);
         VideoIdlePolicy.start(context,worker,AdaptivePolicy::recompute);
         android.content.IntentFilter f=new android.content.IntentFilter();
         f.addAction(android.content.Intent.ACTION_SCREEN_OFF);f.addAction(android.content.Intent.ACTION_SCREEN_ON);
+        f.addAction(Intent.ACTION_USER_PRESENT);
         f.addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED);
         context.registerReceiver(new android.content.BroadcastReceiver(){
             @Override public void onReceive(Context c,android.content.Intent i){worker.post(()->{
@@ -266,13 +275,18 @@ final class AdaptivePolicy {
         VideoIdlePolicy.scene(pkg,pid,sceneFull,interactive&&!ime&&!rawIme);
         if(!Config.refresh("ime")){IME.clear();ime=false;rawIme=false;}
         Idle144Policy.scene(pkg,pid,sceneFull,interactive&&!ime&&!rawIme&&!VideoIdlePolicy.playingVideo());
+        boolean lockCameraEnabled=Config.refresh("lock_camera_120");
+        boolean keyguardLocked=lockCameraEnabled&&interactive&&isKeyguardLocked();
+        lockCameraActive=LockCameraPolicy.active(lockCameraEnabled,interactive,
+                keyguardLocked,pkg,cameraPackages);
         int next=ready&&Config.on("refresh")&&Hook.systemStandardMode()?(interactive?Math.min(Config.effectiveRate(),ime||VideoIdlePolicy.watching()?60:Idle144Policy.active()?120:Config.effectiveRate()):0):0;
+        next=LockCameraPolicy.ceiling(next,lockCameraActive);
         next=BatteryDisplayPolicy.limit(next);
-        String policy=pkg+":"+Config.effectiveRate()+":"+Config.fixed()+":"+Config.explicitProfile()+":"+BatteryDisplayPolicy.capEnabled();
+        String policy=pkg+":"+Config.effectiveRate()+":"+Config.fixed()+":"+Config.explicitProfile()+":"+BatteryDisplayPolicy.capEnabled()+":"+lockCameraActive;
         boolean held=holdFixedRate();if(held!=nativeFixedHeld){nativeFixedHeld=held;NativeIdlePolicy.refresh();NativeReservePolicy.refresh();}
         if(next==cap&&policy.equals(appliedAppPolicy))return;appliedAppPolicy=policy;cap=next;policyChanges++;
         Hook.refreshVideoPolicy();
-        reason=ime?"ime-ceiling60":VideoIdlePolicy.watching()?"watching-idle-ceiling60-native30":interactive?"native-content-under"+Config.effectiveRate():"screen-off-native";
+        reason=ime?"ime-ceiling60":VideoIdlePolicy.watching()?"watching-idle-ceiling60-native30":lockCameraActive?"lock-camera-ceiling120":interactive?"native-content-under"+Config.effectiveRate():"screen-off-native";
         Object d=director,lock=field(d,"mLock");if(lock==null)return;
         try{synchronized(lock){notifySpecs.invoke(d);}}catch(Throwable t){fault="notify-"+t.getClass().getSimpleName();}
     }
@@ -283,6 +297,29 @@ final class AdaptivePolicy {
     private static boolean isPowerSaveMode(){
         PowerManager pm=context==null?null:(PowerManager)context.getSystemService(Context.POWER_SERVICE);
         return pm!=null&&pm.isPowerSaveMode();
+    }
+    private static boolean isKeyguardLocked(){
+        try{
+            KeyguardManager manager=context==null?null:(KeyguardManager)context.getSystemService(Context.KEYGUARD_SERVICE);
+            boolean locked=manager!=null&&manager.isKeyguardLocked();
+            keyguardStatus=manager==null?"unavailable":locked?"locked":"unlocked";
+            return locked;
+        }catch(Throwable error){keyguardStatus="error:"+error.getClass().getSimpleName();return false;}
+    }
+    private static void loadCameraPackages(Context owner){
+        Set<String> found=new HashSet<>();List<String> failures=new ArrayList<>();
+        try{
+            PackageManager manager=owner.getPackageManager();
+            for(String action:new String[]{"android.media.action.STILL_IMAGE_CAMERA","android.media.action.STILL_IMAGE_CAMERA_SECURE","android.media.action.IMAGE_CAPTURE"}){
+                try{
+                    List<ResolveInfo> handlers=manager.queryIntentActivities(new Intent(action),PackageManager.MATCH_DEFAULT_ONLY);
+                    if(handlers==null)continue;
+                    for(ResolveInfo info:handlers)if(info.activityInfo!=null&&!info.activityInfo.packageName.isEmpty())found.add(info.activityInfo.packageName);
+                }catch(Throwable error){failures.add(error.getClass().getSimpleName());}
+            }
+        }catch(Throwable error){failures.add(error.getClass().getSimpleName());}
+        cameraPackages=Collections.unmodifiableSet(found);
+        cameraLookupStatus=failures.isEmpty()?"packages:"+found.size():"packages:"+found.size()+",errors:"+failures;
     }
     static boolean holdFixedRate(){return ready&&interactive&&Hook.systemStandardMode()&&Config.fixed()&&!activeRequest();}
     static boolean activeRequest(){return interactive&&(ime||VideoIdlePolicy.watching()||Idle144Policy.active());}
@@ -296,7 +333,7 @@ final class AdaptivePolicy {
         +" focusHook="+focusHook+" sceneReads="+sceneReads+" scenePackage="+pkg+" sceneFull="+sceneFull+" config="+Config.debugStatus()+" cap="+cap+" ime="+ime+" rawIme="+rawIme+" imeShowDelayMs=300"+" imeSource="+imeSource+" policyChanges="+policyChanges+" voteReads="+voteReads
         +" profile="+Config.effectiveRate()+" baselinePriority="+baselinePriority+" specsDeoptimized="+specsDeoptimized
         +" resolvedPhysicalMax="+resolvedPhysicalMax+" resolvedRenderMax="+resolvedRenderMax
-        +" animation="+AnimationPolicy.status()+" idle144="+Idle144Policy.status()+" video="+VideoIdlePolicy.status()+","+Hook.videoCandidateStatus()+" refreshCap="+BatteryDisplayPolicy.status()+" reserve="+NativeReservePolicy.status()+" lowIdle="+Hook.lowBrightnessStatus()+" reason="+reason+" fault="+fault;}
+        +" animation="+AnimationPolicy.status()+" idle144="+Idle144Policy.status()+" video="+VideoIdlePolicy.status()+","+Hook.videoCandidateStatus()+" lockCamera="+lockCameraActive+",cameraLookup="+cameraLookupStatus+",keyguard="+keyguardStatus+" refreshCap="+BatteryDisplayPolicy.status()+" reserve="+NativeReservePolicy.status()+" lowIdle="+Hook.lowBrightnessStatus()+" reason="+reason+" fault="+fault;}
     private static int integer(Class<?>c,String name)throws Exception{Field f=c.getDeclaredField(name);f.setAccessible(true);return f.getInt(null);}
     private static Object field(Object o,String name){
         if(o==null)return null;for(Class<?>c=o.getClass();c!=null;c=c.getSuperclass())try{Field f=c.getDeclaredField(name);f.setAccessible(true);return f.get(o);}
