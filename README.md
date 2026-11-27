@@ -65,6 +65,11 @@ Availability depends on the device's native AOD implementation.
 
 The in-app **Restart scopes** action requires root and does not reload `system_server`; it does not replace a full reboot after an APK update. Root is also required to change Android's refresh-rate overlay indicator.
 
+## Test builds and releases
+
+- **Signed test APK:** In GitHub Actions, run **Verify and build test APK** and select any branch in this repository. It builds that branch and uploads a signed test APK as an Actions artifact, without creating a tag or GitHub Release. Manual test builds use the release signing key, so the branch's `versionCode` must be at least the installed app's. Only run this for trusted branches because branch build code runs in a job with signing secrets. The workflow must exist on the default branch for manual dispatch; artifacts are retained for 14 days and follow repository access permissions.
+- **Public release:** Update `versionName` and `versionCode` in `version.properties`, add a matching `## v<versionName>` section to `CHANGELOG.md`, commit both to the default branch, then run **Build and publish release APK** there. It builds the signed APK, creates the `v<versionName>` tag and public GitHub Release, and uses that changelog section as the release description. Alternatively, pushing a matching `v*` tag triggers the same release workflow.
+
 ## Known limitations
 
 | Area                | Limitation                                                                              |

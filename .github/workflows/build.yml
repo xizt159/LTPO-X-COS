@@ -47,14 +47,56 @@ jobs:
           python tests/settings_check.py "$RUNNER_TEMP/test-settings"
           python tests/widgets_check.py "$RUNNER_TEMP/test-widgets"
           python tests/supported_apps_check.py "$RUNNER_TEMP/test-supported"
-      - name: Build with an ephemeral test key
+      - name: Prepare release signing key for manual test build
+        if: github.event_name == 'workflow_dispatch'
         env:
-          KEYSTORE: ${{ runner.temp }}/ltpo-x-cos-test.jks
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for name in RELEASE_KEYSTORE_BASE64 RELEASE_KEYSTORE_PASSWORD RELEASE_KEY_ALIAS RELEASE_KEY_PASSWORD; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::Required Actions secret is missing: $name"
+              exit 1
+            fi
+          done
+          KEYSTORE_PATH="$RUNNER_TEMP/ltpo-x-cos-release.jks"
+          printf '%s' "$RELEASE_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
+          test -s "$KEYSTORE_PATH"
+          chmod 600 "$KEYSTORE_PATH"
+      - name: Build APK
+        id: build
+        env:
+          KEYSTORE: ${{ runner.temp }}/ltpo-x-cos-release.jks
+          KS_PASS: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          KS_KEY_PASS: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          KS_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           OUT: ${{ runner.temp }}/ltpo-x-cos-build
-          APK_NAME: LTPO-X-COS-CI-test.apk
           BUILD_TOOLS: ${{ env.ANDROID_HOME }}/build-tools/34.0.0
-        run: bash build.sh
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            VERSION_NAME="$(sed -n 's/^versionName=//p' version.properties)"
+            if [[ -z "$VERSION_NAME" ]]; then
+              echo "::error::versionName is missing from version.properties"
+              exit 1
+            fi
+            APK_NAME="LTPO-X-COS-v${VERSION_NAME}-test.apk"
+            ARTIFACT_NAME="LTPO-X-COS-v${VERSION_NAME}-signed-test"
+          else
+            APK_NAME="LTPO-X-COS-CI-test.apk"
+            ARTIFACT_NAME="LTPO-X-COS-CI-test-${GITHUB_RUN_NUMBER}"
+          fi
+          APK_NAME="$APK_NAME" bash build.sh
+          echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         with:
-          name: LTPO-X-COS-CI-test-only
-          path: ${{ runner.temp }}/ltpo-x-cos-build/LTPO-X-COS-CI-test.apk
+          name: ${{ steps.build.outputs.artifact_name }}
+          path: ${{ runner.temp }}/ltpo-x-cos-build/*.apk
+          if-no-files-found: error
+          retention-days: 14
+      - name: Remove temporary signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/ltpo-x-cos-release.jks"
