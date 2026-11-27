@@ -4,8 +4,15 @@ import android.app.*;
 import android.os.*;
 import android.content.*;
 import android.content.pm.ResolveInfo;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.*;
 import android.widget.*;
@@ -81,9 +88,9 @@ public final class MainActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(dark?0:View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
         root=vertical();root.setPadding(dp(20),dp(16),dp(20),0);root.setBackgroundColor(bg);root.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);setContentView(root);
         LinearLayout header=new LinearLayout(this);header.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);header.setGravity(Gravity.CENTER_VERTICAL);
-        TextView title=text("LTPO-X (COS)",28,ink);title.setTypeface(null,Typeface.BOLD);title.setGravity(Gravity.CENTER_VERTICAL);header.addView(title,new LinearLayout.LayoutParams(0,dp(48),1));
+        TextView title=text("LTPO-X (COS)",28,ink);title.setTypeface(null,Typeface.BOLD);title.setIncludeFontPadding(false);title.setPadding(0,0,0,0);title.setGravity(Gravity.CENTER_VERTICAL);header.addView(title,new LinearLayout.LayoutParams(0,dp(42),1));
         ImageButton restart=new ImageButton(this);restart.setImageDrawable(new ToolbarIcon(ink));restart.setBackground(shape(card,21));restart.setContentDescription("Restart scopes");restart.setPadding(dp(11),dp(11),dp(11),dp(11));restart.setOnClickListener(v->restartScopes());header.addView(restart,new LinearLayout.LayoutParams(dp(42),dp(42)));
-        TextView helpButton=text("?",20,ink);helpButton.setGravity(Gravity.CENTER);helpButton.setPadding(0,0,0,0);helpButton.setBackground(shape(card,21));helpButton.setContentDescription("Help");helpButton.setOnClickListener(v->help());LinearLayout.LayoutParams helpParams=new LinearLayout.LayoutParams(dp(42),dp(42));helpParams.setMargins(dp(8),0,0,0);header.addView(helpButton,helpParams);
+        TextView helpButton=text("?",20,ink);helpButton.setIncludeFontPadding(false);helpButton.setGravity(Gravity.CENTER);helpButton.setPadding(0,0,0,0);helpButton.setBackground(shape(card,21));helpButton.setContentDescription("Help");helpButton.setOnClickListener(v->help());LinearLayout.LayoutParams helpParams=new LinearLayout.LayoutParams(dp(42),dp(42));helpParams.setMargins(dp(8),0,0,0);header.addView(helpButton,helpParams);
         root.addView(header);
         root.addView(text(systemVersion()+"  ·  "+version(),13,muted));
         LinearLayout tabs=new LinearLayout(this);tabs.setPadding(0,dp(15),0,dp(12));root.addView(tabs);
@@ -107,10 +114,13 @@ public final class MainActivity extends Activity {
         sw.setOnCheckedChangeListener((button,value)->{save(key,value);if(master==null)renderPreservingScroll();});
         row.setOnClickListener(v->{if(sw.isEnabled())sw.setChecked(!sw.isChecked());});
     }
-    private void action(LinearLayout group,String title,String subtitle,String indicator,Runnable click){
+    private void action(LinearLayout group,String title,String subtitle,boolean selection,Runnable click){
         LinearLayout row=new LinearLayout(this);row.setGravity(Gravity.CENTER_VERTICAL);row.setPadding(0,dp(10),0,dp(10));group.addView(row);
         LinearLayout labels=vertical();row.addView(labels,new LinearLayout.LayoutParams(0,-2,1));labels.addView(text(title,16,ink));labels.addView(text(subtitle,12,muted));
-        TextView mark=text(indicator,24,ink);mark.setIncludeFontPadding(false);mark.setGravity(Gravity.CENTER);mark.setPadding(0,0,0,0);mark.setContentDescription(indicator.equals("↗")?"Open":"Select");row.addView(mark,new LinearLayout.LayoutParams(dp(48),dp(48)));
+        View mark;
+        if(selection){ImageView icon=new ImageView(this);icon.setImageDrawable(new ExpandMoreIcon(ink));icon.setContentDescription("Select");mark=icon;}
+        else{TextView icon=text("↗",24,ink);icon.setIncludeFontPadding(false);icon.setGravity(Gravity.CENTER);icon.setPadding(0,0,0,0);icon.setContentDescription("Open");mark=icon;}
+        row.addView(mark,new LinearLayout.LayoutParams(dp(48),dp(48)));
         row.setOnClickListener(v->click.run());
     }
     private void display(){
@@ -118,15 +128,15 @@ public final class MainActivity extends Activity {
         toggle(l,"refresh","Enable display adjustments","Independent of AOD features",null);
         boolean enabled=on("refresh");
         l=group("Refresh rate");
-        action(l,"Open display settings","Review system display options","↗",()->{try{startActivity(new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS));}catch(Exception ignored){}});
+        action(l,"Open display settings","Review system display options",false,()->{try{startActivity(new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS));}catch(Exception ignored){}});
         if(enabled){
-            action(l,"Maximum refresh rate: "+state.getInt("rate",165)+" Hz","Caps interaction and animation rates while preserving adaptive LTPO idle.","▾",()->{
+            action(l,"Maximum refresh rate: "+state.getInt("rate",165)+" Hz","Caps interaction and animation rates while preserving adaptive LTPO idle.",true,()->{
                 int selected=Arrays.binarySearch(hz,state.getInt("rate",165));new AlertDialog.Builder(this).setTitle("Maximum refresh rate").setSingleChoiceItems(rates,Math.max(0,selected),(d,n)->{Bundle b=new Bundle();b.putInt("rate",hz[n]);write(b);d.dismiss();renderPreservingScroll();}).setNegativeButton("Cancel",null).show();
             });
             info(l,"LTPO-X applies the selected maximum regardless of the system refresh mode. Idle minimum: 1 Hz at 60 / 90 / 120 Hz; at 144 Hz, enable “144 → 120 while idle” to reach 1 Hz. At 165 Hz, the idle floor is firmware-dependent (about 33–55 Hz).");
             toggle(l,"disable_ltpo","Disable LTPO during interaction","Hold the selected rate; video, keyboard and thermal ceilings still apply","refresh");
             toggle(l,"app_policies","Enable per-app refresh policies","Choose fixed or variable per app in the native Supported apps page","refresh");
-            action(l,"Supported apps","Per-app refresh controls in system settings","↗",this::openSupportedApps);
+            action(l,"Supported apps","Per-app refresh controls in system settings",false,this::openSupportedApps);
             toggle(l,"lock_camera_120","Lock screen & camera at 120 Hz","Cap refresh at 120 Hz while locked or when a camera app is foreground; the camera viewfinder remains camera-controlled.","refresh");
             l=group("Battery Saver");
             toggle(l,"battery_saver_cap","Battery Saver Cap","Limits the maximum to 60 Hz while Android Battery Saver is active; LTPO idle remains adaptive.","refresh");
@@ -255,4 +265,15 @@ public final class MainActivity extends Activity {
         },"DisplayAppList").start();
     }
     private void saveApps(List<String> ids,boolean[] checked){List<String> chosen=new ArrayList<>();for(int i=0;i<ids.size();i++)if(checked[i])chosen.add(ids.get(i));Bundle b=new Bundle();b.putString("apps",String.join(";",chosen));write(b);}
+    private static final class ExpandMoreIcon extends Drawable {
+        private final Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        ExpandMoreIcon(int color){paint.setColor(color);paint.setStrokeWidth(3);paint.setStyle(Paint.Style.STROKE);paint.setStrokeCap(Paint.Cap.ROUND);paint.setStrokeJoin(Paint.Join.ROUND);}
+        @Override public void draw(Canvas canvas){
+            Rect bounds=getBounds();int save=canvas.save();canvas.translate((bounds.left+bounds.right)/2f,(bounds.top+bounds.bottom)/2f);float scale=Math.min(bounds.width(),bounds.height())/48f;canvas.scale(scale,scale);
+            Path path=new Path();path.moveTo(-10,-4);path.lineTo(0,6);path.lineTo(10,-4);canvas.drawPath(path,paint);canvas.restoreToCount(save);
+        }
+        @Override public void setAlpha(int alpha){paint.setAlpha(alpha);invalidateSelf();}
+        @Override public void setColorFilter(ColorFilter filter){paint.setColorFilter(filter);invalidateSelf();}
+        @Override public int getOpacity(){return PixelFormat.TRANSLUCENT;}
+    }
 }
