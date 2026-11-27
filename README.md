@@ -20,6 +20,7 @@ Adaptive refresh-rate policies and Always-On Display controls for compatible One
 | Maximum refresh rate   | Choose 60, 90, 120, 144, or 165 Hz; 185 Hz is offered when supported by the device. LTPO can still lower the rate while idle.                                          |
 | System display setting | Select **Standard (60 Hz)** to enable LTPO-X's maximum-rate policy. Custom system refresh modes are left unchanged.                                                    |
 | Battery Saver cap      | Optional 60 Hz maximum while the device's own Battery Saver is active; adaptive LTPO idle remains available.                                                           |
+| Lock screen/camera cap | Optional 120 Hz maximum while the keyguard is locked or a detected camera app is foreground; the camera viewfinder remains camera-controlled.                          |
 | Adaptive idle          | 60/90/120/144 Hz modes can reach 1 Hz when firmware permits. At 165 Hz, the idle floor varies by firmware (about 33–55 Hz). The 144-to-1 Hz path remains experimental. |
 | Other controls         | Low-brightness idle, recognized idle tables, shorter idle timeout, selected-rate animations, keyboard and passive-video ceilings, and fixed interaction rate.          |
 

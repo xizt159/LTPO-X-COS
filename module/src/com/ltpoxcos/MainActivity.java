@@ -42,8 +42,6 @@ public final class MainActivity extends Activity {
             restarting=true;new Thread(()->{boolean granted=false,ok=false;try{granted=ScopeRestart.root();if(granted)ok=ScopeRestart.restart();}catch(Exception ignored){}final boolean root=granted,done=ok;runOnUiThread(()->{restarting=false;if(isFinishing())return;new AlertDialog.Builder(this).setTitle(done?"Scopes restarted":"Scope restart").setMessage(done?"Restart request sent to AOD and SystemUI.":!root?"Root permission was not granted. Settings still work; restart AOD and SystemUI manually or reboot the phone.":"Restart failed. Restart the scopes manually.").setPositiveButton("OK",null).show();});},"RestartScopes").start();
         }).setNegativeButton("Cancel",null).show();
     }
-    private void scopeHeader(){body.addView(text(tab==0?"DISPLAY & BRIGHTNESS":"ALWAYS-ON DISPLAY",12,muted));}
-
     private int tab=0,bg,card,ink,muted,accent=0xff56c8d7;
     private Bundle state;private LinearLayout root,body;private ScrollView contentScroll;
     private String[] rates={"60 Hz","90 Hz","120 Hz","144 Hz","165 Hz"};
@@ -69,7 +67,7 @@ public final class MainActivity extends Activity {
         LinearLayout tabs=new LinearLayout(this);tabs.setPadding(0,dp(15),0,dp(12));root.addView(tabs);
         for(int i=0;i<2;i++){final int selected=i;TextView t=text(i==0?"Display & Brightness":"Always-on Display",15,tab==i?0xff102327:muted);t.setGravity(Gravity.CENTER);t.setPadding(dp(8),dp(13),dp(8),dp(13));t.setBackground(shape(tab==i?accent:card,18));LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-2,1);lp.setMargins(dp(3),0,dp(3),0);tabs.addView(t,lp);t.setOnClickListener(v->{tab=selected;render();});}
         ScrollView scroll=new ScrollView(this);contentScroll=scroll;scroll.setFillViewport(true);root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));body=vertical();body.setPadding(0,0,0,dp(24));scroll.addView(body);
-        scopeHeader();if(tab==0)display();else aod();
+        if(tab==0)display();else aod();
     }
     private void renderPreservingScroll(){
         int scrollY=contentScroll==null?0:contentScroll.getScrollY();
@@ -89,17 +87,18 @@ public final class MainActivity extends Activity {
     }
     private void action(LinearLayout group,String title,String subtitle,Runnable click){LinearLayout l=vertical();l.setPadding(0,dp(12),0,dp(12));l.addView(text(title+"  ‹",16,ink));l.addView(text(subtitle,12,muted));group.addView(l);l.setOnClickListener(v->click.run());}
     private void display(){
-        LinearLayout l=group("DISPLAY & BRIGHTNESS");
+        LinearLayout l=group("Display & Brightness");
         toggle(l,"refresh","Enable display adjustments","Independent of AOD features",null);
         action(l,"Maximum refresh rate: "+state.getInt("rate",165)+" Hz","Caps interaction and animation rates while preserving adaptive LTPO idle.",()->{
             int selected=Arrays.binarySearch(hz,state.getInt("rate",165));new AlertDialog.Builder(this).setTitle("Maximum refresh rate").setSingleChoiceItems(rates,Math.max(0,selected),(d,n)->{Bundle b=new Bundle();b.putInt("rate",hz[n]);write(b);d.dismiss();renderPreservingScroll();}).setNegativeButton("Cancel",null).show();
         });
-        info(l,"For LTPO-X control, first select Standard (60 Hz) in the system's display settings. Custom system refresh modes are left unchanged. Idle minimum: 1 Hz at 60 / 90 / 120 / 144 Hz; 165 Hz is firmware-dependent (about 33–55 Hz).");
+        info(l,"For LTPO-X control, first select Standard (60 Hz) in the system's display settings. Custom system refresh modes are left unchanged. Idle minimum: 1 Hz at 60 / 90 / 120 Hz; at 144 Hz, enable “144 → 120 while idle” to reach 1 Hz. At 165 Hz, the idle floor is firmware-dependent (about 33–55 Hz).");
         toggle(l,"disable_ltpo","Disable LTPO during interaction","Hold the selected rate; video, keyboard and thermal ceilings still apply","refresh");
         toggle(l,"app_policies","Enable per-app refresh policies","Choose fixed or variable per app in the native Supported apps page","refresh");
         action(l,"Supported apps","Display settings → Refresh rate → Supported apps",()->{try{startActivity(new Intent(android.provider.Settings.ACTION_DISPLAY_SETTINGS));}catch(Exception ignored){}});
+        toggle(l,"lock_camera_120","Lock screen & camera at 120 Hz","Cap refresh at 120 Hz while locked or when a camera app is foreground; the camera viewfinder remains camera-controlled.","refresh");
         l=group("Battery Saver");
-        toggle(l,"battery_saver_cap","Cap refresh rate on Battery Saver","Limits the maximum to 60 Hz while Android Battery Saver is active; LTPO idle remains adaptive.","refresh");
+        toggle(l,"battery_saver_cap","Battery Saver Cap","Limits the maximum to 60 Hz while Android Battery Saver is active; LTPO idle remains adaptive.","refresh");
         l=group("LTPO and interaction");
         toggle(l,"low_light","Allow idle at low brightness","Retain DC eligibility and the guarded native idle path","refresh");
         toggle(l,"tables","1 Hz idle tables","Adapt known 60 / 90 / 120 / 165 Hz tables; hardware confirmation is required","refresh");
@@ -113,7 +112,7 @@ public final class MainActivity extends Activity {
         footer();
     }
     private void aod(){
-        LinearLayout l=group("COLOROS AOD");
+        LinearLayout l=group("Always-On Display");
         toggle(l,"aod","Enable AOD features","Independent of display and refresh adjustments",null);
         toggle(l,"panoramic","Full-screen AOD","Enable supported panoramic AOD paths","aod");
         toggle(l,"all_day","All-day display","Expose the all-day panoramic option in system settings","aod");
