@@ -72,7 +72,7 @@ public final class MainActivity extends Activity {
                 +" --es ':settings:show_fragment' '"+fragment+"'"
                 +" --es ':settings:show_fragment_title' '"+title+"'"
                 +" --ez ':settings:show_fragment_as_subsetting' true";
-        Process process=new ProcessBuilder("su","-c",command).redirectErrorStream(true).start();
+        java.lang.Process process=new ProcessBuilder("su","-c",command).redirectErrorStream(true).start();
         try{
             if(!process.waitFor(10,java.util.concurrent.TimeUnit.SECONDS)){
                 process.destroyForcibly();throw new IOException("Timed out waiting for the Settings screen to open.");
