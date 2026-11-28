@@ -198,8 +198,8 @@ public final class MainActivity extends Activity {
                                           ? "Restart request sent to AOD and SystemUI."
                                           : !root
                                               ? "Root permission was not granted. Settings still"
-                                                    + " work; restart AOD and SystemUI manually or"
-                                                    + " reboot the phone."
+                                                  + " work; restart AOD and SystemUI manually or"
+                                                  + " reboot the phone."
                                               : "Restart failed. Restart the scopes manually.")
                                   .setPositiveButton("OK", null)
                                   .show();
